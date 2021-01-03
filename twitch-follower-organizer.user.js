@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name        Twitch Better Sidebar
-// @namespace   twitch-better-sidebar
+// @name        Twitch Follower Organizer
+// @namespace   twitch-follower-organizer
 // @version     0.0.1
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
