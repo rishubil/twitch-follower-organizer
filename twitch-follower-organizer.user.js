@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.1.1
+// @version     0.1.2
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
 // @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
@@ -101,8 +101,6 @@
   /**
    * Add group to groups with name and save
    *
-   * Added group will be inserted before UNKNOWN group.
-   *
    * @param {string} group_name The name of group
    * @throws If there is the group named `group_name`
    */
@@ -110,7 +108,7 @@
     if (findGroupIndexByName(group_name) !== -1) {
       throw new Error('ALREADY_EXIST');
     }
-    groups.splice(groups.length - 1, 0, {
+    groups.splice(groups.length, 0, {
       'group_name': group_name,
       'is_opened': false,
       'hide_offline': true,
@@ -334,7 +332,7 @@
     });
     if (group_index === -1) {
       // return UNKNOWN group
-      return groups[groups.length - 1];
+      return groups[findGroupIndexByName(UNKNOWN_GROUP_NAME)];
     }
     return groups[group_index];
   }
