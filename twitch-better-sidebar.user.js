@@ -46,6 +46,11 @@
   let grouped_channel_infos = {};
 
   /**
+   * @type {object} Response data from Twitch API
+   */
+  let followedSectionData = null;
+
+  /**
    * Twitch react router's history object
    */
   let reactHistory = null;
@@ -233,6 +238,9 @@
    * @throws If there is the group named `new_name`
    */
   function changeGroupName(old_name, new_name) {
+    if (new_name === UNKNOWN_GROUP_NAME) {
+      throw new Error('ALREADY_EXIST');
+    }
     if (findGroupIndexByName(new_name) !== -1) {
       throw new Error('ALREADY_EXIST');
     }
@@ -442,18 +450,22 @@
     })
       .then(response => response.json())
       .then(data => {
-        processFollowedSectionData(data);
+        followedSectionData = data;
+        processFollowedSectionData();
       });
   }
+
+  /**
+   * @type {function} `requestFollowedSectionData`, but debounced
+   */
+  const debouncedRequestFollowedSectionData = _.debounce(requestFollowedSectionData, 200);
 
   /**
    * Convert raw data into `grouped_channel_infos`
    * 
    * It will call {@link renderFollowedSection}.
-   * 
-   * @param {object} data response data from Twitch API
    */
-  function processFollowedSectionData(data) {
+  function processFollowedSectionData() {
     // clear old grouped_channel_infos and set default values
     grouped_channel_infos = {};
     for (let group_index = 0; group_index < groups.length; group_index++) {
@@ -462,7 +474,7 @@
     }
 
     // append ChannelInfo to each group
-    const channel_infos = data[0].data.personalSections[0].items;
+    const channel_infos = followedSectionData[0].data.personalSections[0].items;
     for (let index = 0; index < channel_infos.length; index++) {
       const channel_info = channel_infos[index];
       const channel = channel_info.user.login;
@@ -500,6 +512,31 @@
       tbsHtml += generateTbsGroupHtml(group_index, channel_infos);
     }
     tbsEl.innerHTML = tbsHtml;
+
+    const sideNavHeaderEl = document.querySelector('.side-nav-section:first-child .side-nav-header');
+    if (sideNavHeaderEl !== null) {
+      let addGroupButtonEl = sideNavHeaderEl.getElementsByClassName('tbs-add-group-button');
+      if (addGroupButtonEl.length === 0) {
+        addGroupButtonEl = document.createElement('button');
+        sideNavHeaderEl.appendChild(addGroupButtonEl);
+        addGroupButtonEl.outerHTML = `<button aria-label="그룹 추가" data-a-target="whisper-box-button"
+          class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative tw-mg-t-1 tw-mg-b-1"><span
+              class="tw-button-icon__icon">
+              <div style="width: 2rem; height: 2rem;">
+                  <div class="tw-icon">
+                      <div class="tw-aspect">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                          <line x1="12" y1="10" x2="12" y2="16" />
+                          <line x1="9" y1="13" x2="15" y2="13" />
+                        </svg>
+                      </div>
+                  </div>
+              </div>
+          </span></button>`;
+      }
+    }
   }
 
   /**
@@ -599,6 +636,10 @@
   function generateTbsGroupItemHtml(group_index, channel_info) {
     const is_live = channel_info.content.viewersCount !== undefined;
     if (is_live) {
+      let game_name = '';
+      if (channel_info.content.game !== null) {
+        game_name = channel_info.content.game.displayName;
+      }
       return `<div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
         style="transition: transform 250ms ease 0ms, opacity;">
         <div>
@@ -622,7 +663,7 @@
                   </div>
                   <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">
                     <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
-                      title="${channel_info.content.game.displayName}">${channel_info.content.game.displayName}</p>
+                      title="${game_name}">${game_name}</p>
                   </div>
                 </div>
                 <div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
@@ -847,7 +888,14 @@
     const color = groupSettingEl.getElementsByClassName('tbs-group-setting-color')[0].value;
     const hide_offline = groupSettingEl.getElementsByClassName('tbs-group-setting-hide-offline')[0].value === 'true';
     
-    if (group['group_name'] !== group_name && findGroupIndexByName(group_name) !== -1) {
+    if (group['group_name'] === UNKNOWN_GROUP_NAME && group['group_name'] !== group_name) {
+      // UNKNOWN group cannot be changed name
+      return "이름을 변경할 수 없는 그룹입니다.";
+    }
+
+    if (group['group_name'] !== group_name && (
+      findGroupIndexByName(group_name) !== -1 || group_name === UNKNOWN_GROUP_NAME
+    )) {
       // group_name is already taken
       return "이미 존재하는 그룹 제목입니다.";
     }
@@ -865,6 +913,8 @@
    * Delete group from setting overlay
    * 
    * If there is no group setting overlay, do nothing.
+   * 
+   * @return {?string} Return null if delete successfully, else error text.
    */
   function deleteGroupFromSettingOverlay() {
     let groupSettingEl = document.getElementsByClassName('tbs-group-setting');
@@ -874,7 +924,14 @@
       groupSettingEl = groupSettingEl[0];
     }
     const target_group_name = groupSettingEl.dataset.tbsGroupName;
+
+    if (target_group_name === UNKNOWN_GROUP_NAME) {
+      // UNKNOWN group cannot be deleted
+      return "삭제할 수 없는 그룹입니다.";
+    }
+
     removeGroup(target_group_name);
+    return null;
   }
 
   /**
@@ -921,7 +978,7 @@
                       <input type="text"
                         class="tbs-group-setting-group-name tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
                         autocapitalize="off" autocorrect="off" autocomplete="off"
-                        spellcheck="false" value="${group['group_name']}">
+                        spellcheck="false" value="${group['group_name']}"${group['group_name'] === UNKNOWN_GROUP_NAME ? ' disabled': ''}>
                     </div>
                     <div>
                       <div class="tw-mg-b-05 tw-mg-t-1">
@@ -943,8 +1000,8 @@
                       </select>
                     </div>
                   </div>
-                  <div class="tw-mg-t-1 tw-align-items-center tw-flex tw-flex-grow-1 tw-flex-shrink-1 tw-full-width tw-justify-content-between">
-                    <button aria-label="삭제" data-a-target="whisper-box-button"
+                  <div class="tw-mg-t-1 tw-align-items-center tw-flex tw-flex-grow-1 tw-flex-shrink-1 tw-full-width tw-justify-content-between">`
+                  + (group['group_name'] !== UNKNOWN_GROUP_NAME ? `<button aria-label="삭제" data-a-target="whisper-box-button"
                       class="tbs-group-setting-delete-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
                           class="tw-button-icon__icon">
                           <div style="width: 2rem; height: 2rem;">
@@ -961,8 +1018,7 @@
                                   </div>
                               </div>
                           </div>
-                      </span></button>
-                    <div>
+                      </span></button>`: `<div></div>`) + `<div>
                       <button aria-label="취소" data-a-target="whisper-box-button"
                         class="tbs-group-setting-cancel-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
                             class="tw-button-icon__icon">
@@ -1029,6 +1085,28 @@
   function registerEventListeners() {
     document.addEventListener('click', function (e) {
       if (e.target) {
+        const addGroupButton = findEventTargetbyClassName(e, 'tbs-add-group-button');
+        if (addGroupButton !== null) {
+          let groupNumber = 1;
+          while (true) {
+            try {
+              const group_name = `그룹 ${groupNumber}`;
+              addGroup(`그룹 ${groupNumber}`);
+              processFollowedSectionData();
+              renderFollowedSection();
+              const group = getGroupByName(group_name);
+              showGroupSettingOverlay(group);
+              e.preventDefault();
+              return;
+            } catch (err) {
+              if (err.message !== 'ALREADY_EXIST') {
+                console.log(err);
+                break;
+              }
+              groupNumber++;
+            }
+          }
+        }
         const editButton = findEventTargetbyClassName(e, 'tbs-edit-button');
         if (editButton !== null) {
           const group_index = editButton.dataset.tbsGroupIndex;
@@ -1048,7 +1126,8 @@
           const saveResult = saveGroupFromSettingOverlay();
           if (saveResult === null) {
             clearGroupSettingOverlay();
-            requestFollowedSectionData();
+            processFollowedSectionData();
+            renderFollowedSection();
           } else {
             const errorEl = document.getElementsByClassName('tbs-group-settings-error')[0];
             errorEl.style.display = 'block';
@@ -1059,9 +1138,15 @@
         }
         const groupSettingDeleteButton = findEventTargetbyClassName(e, 'tbs-group-setting-delete-button');
         if (groupSettingDeleteButton !== null) {
-          deleteGroupFromSettingOverlay();
-          clearGroupSettingOverlay();
-          renderFollowedSection();
+          const deleteResult = deleteGroupFromSettingOverlay();
+          if (deleteResult === null) {
+            clearGroupSettingOverlay();
+            renderFollowedSection();
+          } else {
+            const errorEl = document.getElementsByClassName('tbs-group-settings-error')[0];
+            errorEl.style.display = 'block';
+            errorEl.innerHTML = deleteResult;
+          }
           e.preventDefault();
           return;
         }
@@ -1179,7 +1264,7 @@
         if (followingOriginalComponentDidUpdate !== undefined) {
           followingOriginalComponentDidUpdate.call(this, prevProps, prevState, snapshot);
         }
-        requestFollowedSectionData();
+        debouncedRequestFollowedSectionData();
       }
     } catch (err) {
       setTimeout(checkFollowingUiUpdated, 500);
@@ -1202,10 +1287,10 @@
         }
         // It should be call once, so restore original function here
         semiRootSn.componentDidUpdate = semiRootOriginalComponentDidUpdate;
-        requestFollowedSectionData();
+        debouncedRequestFollowedSectionData();
         checkFollowingUiUpdated();
       }
-      requestFollowedSectionData();
+      debouncedRequestFollowedSectionData();
     } catch (err) {
       setTimeout(checkRootUiUpdated, 500);
     }
