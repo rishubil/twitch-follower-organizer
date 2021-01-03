@@ -50,6 +50,11 @@
   let reactHistory = null;
 
   /**
+   * @type {boolean} Whether to show overlay
+   */
+  let shouldShowOverlay = false;
+
+  /**
    * Load groups from GM storage
    */
   function loadGroups() {
@@ -131,6 +136,30 @@
       return null;
     }
     return groups[group_index];
+  }
+
+  /**
+   * Find ChannelInfo from `grouped_channel_infos` by name and return it
+   * 
+   * If there is no group named `group_name`, return null.
+   * If there is channel named `channel_name`, return null.
+   * 
+   * @param {string} group_name The name of group
+   * @param {string} channel_name The name of channel
+   * @return {?ChannelInfo} founded ChannelInfo, else null
+   */
+  function getChannelInfoByName(group_name, channel_name) {
+    const channel_infos = grouped_channel_infos[group_name];
+    if (channel_infos == undefined) {
+      return null;
+    }
+    const index = _.findIndex(channel_infos, function(channel_info) {
+      return channel_info.user.login === channel_name;
+    });
+    if (index === -1) {
+      return null;
+    }
+    return channel_infos[index];
   }
 
   /**
@@ -289,6 +318,17 @@
       .tbs-group-item {
         border-left: 0.2rem solid #6441a4;
       }
+      .twitch-better-sidebar-overlay {
+        position: fixed;
+        z-index: 5000;
+        top: 0px;
+        left: 0px;
+        width: 1px;
+        height: 1px;
+      }
+      .tbs-card-overlay {
+        position: absolute;
+      }
     `);
   }
 
@@ -433,7 +473,7 @@
         const channel_info = channel_infos[channel_info_index];
         // render live channels, and if hide_offline is false, render offline channels too.
         if (channel_info.content.viewersCount !== undefined || !group['hide_offline']) {
-          group_item_html += generateTbsGroupItemHtml(channel_info);
+          group_item_html += generateTbsGroupItemHtml(group_index, channel_info);
         }
       }
     }
@@ -492,18 +532,19 @@
 
   /**
    * Generate HTML string of channel to render
+   * @param {number} group_index The index of groups
    * @param {ChannelInfo} channel_info ChannelInfo to render
    * @return {string} Generated HTML string
    */
-  function generateTbsGroupItemHtml(channel_info) {
+  function generateTbsGroupItemHtml(group_index, channel_info) {
     const is_live = channel_info.content.viewersCount !== undefined;
     if (is_live) {
       return `<div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
         style="transition: transform 250ms ease 0ms, opacity;">
         <div>
           <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
-              class="tbs-group-item side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-test-selector="followed-channel" href="/${channel_info.user.login}">
+              class="tbs-group-item tbs-link side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
+              data-test-selector="followed-channel" data-tbs-group-index="${group_index}" data-tbs-channel="${channel_info.user.login}" href="/${channel_info.user.login}">
               <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
                 <figure aria-label="${channel_info.user.displayName} (${channel_info.user.login})" class="tw-avatar tw-avatar--size-30"><img
                     class="tw-block tw-border-radius-rounded tw-image tw-image-avatar"
@@ -542,8 +583,8 @@
         style="transition: transform 250ms ease 0ms, opacity;">
         <div>
           <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
-              class="tbs-group-item side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-test-selector="followed-channel" href="/${channel_info.user.login}">
+              class="tbs-group-item tbs-link side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
+              data-test-selector="followed-channel" data-tbs-group-index="${group_index}" data-tbs-channel="${channel_info.user.login}" href="/${channel_info.user.login}">
               <div
                 class="side-nav-card__avatar side-nav-card__avatar--offline tw-align-items-center tw-flex-shrink-0">
                 <figure aria-label="${channel_info.user.displayName} (${channel_info.user.login})" class="tw-avatar tw-avatar--size-30"><img
@@ -576,31 +617,225 @@
   }
 
   /**
+   * Get overlay element
+   * @return {Element} Overlay element
+   */
+  function getOverlay() {
+    let tbsoEl = document.getElementsByClassName('twitch-better-sidebar-overlay');
+    if (tbsoEl.length === 0){
+      tbsoEl = document.createElement('div');
+      tbsoEl.classList.add('twitch-better-sidebar-overlay');
+      document.querySelector('body').appendChild(tbsoEl);
+    } else {
+      tbsoEl = tbsoEl[0];
+    }
+    return tbsoEl;
+  }
+
+  /**
+   * Clear all contents in overlay
+   */
+  function clearOverlay() {
+    const tbsoEl = getOverlay();
+    tbsoEl.innerHTML = '';
+  }
+
+  /**
+   * Hide overlay
+   */
+  function HideOverlay() {
+    if (!shouldShowOverlay) {
+      clearOverlay();
+    }
+  }
+
+  /**
+   * @type {function} Hide overlay, but debounced
+   */
+  const debouncedHideOverlay = _.debounce(HideOverlay, 200);
+
+  /**
+   * Show Channel's overlay
+   * @param {Element} card channel's card element
+   * @param {ChannelInfo} channel_info ChannelInfo to draw overlay
+   */
+  function showChannelOverlay(card, channel_info) {
+    const tbsoEl = getOverlay();
+    clearOverlay();
+
+    const rect = card.getBoundingClientRect();
+    const x = rect.x + rect.width;
+    const y = rect.y;
+
+    const innerOverlay = document.createElement('div');
+    innerOverlay.classList.add('tbs-card-overlay');
+    innerOverlay.style.left = `${x}px`;
+    innerOverlay.style.top = `${y}px`;
+
+    innerOverlay.innerHTML = generateTbsCardOverlayHtml(channel_info);
+
+    tbsoEl.appendChild(innerOverlay);
+
+    shouldShowOverlay = true;
+  }
+
+  function generateTbsCardOverlayHtml(channel_info) {
+    const is_live = channel_info.content.viewersCount !== undefined;
+    if (is_live) {
+      return `<div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
+            style="transition-delay: 0ms; transition-duration: 250ms;">
+            <div class="tw-pd-l-1">
+                <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block"
+                    role="dialog">
+                    <div class="tw-pd-x-05 tw-pd-y-05">
+                        <div class="online-side-nav-channel-tooltip__body tw-pd-x-05">
+                            <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2">${channel_info.user.broadcastSettings.title}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    } else {
+      let html = `<div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
+        style="transition-delay: 0ms; transition-duration: 250ms;">
+        <div class="tw-pd-l-1">
+            <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block"
+                role="dialog">
+                <div class="tw-pd-x-05 tw-pd-y-05">
+                    <div class="">`;
+      for (let i = 0; i < channel_info.content.edges.length; i++) {
+        const node = channel_info.content.edges[i].node;
+        html += `<a class="tbs-link tw-block tw-full-width tw-interactable tw-interactable--default tw-interactable--hover-enabled"
+              href="/videos/${node.id}">
+              <div class="tw-pd-x-05 tw-pd-y-05">
+                  <div class="tw-card tw-relative">
+                      <div class="tw-align-items-center tw-flex tw-flex-nowrap tw-flex-row">
+                          <div
+                              class="tw-border-radius-small tw-card-img tw-card-img--size-8 tw-flex-shrink-0 tw-overflow-hidden">
+                              <div class="ScAspectRatio-sc-1sw3lwy-1 dNNaBC tw-aspect">
+                                  <div class="ScAspectSpacer-sc-1sw3lwy-0 hhnnBG"></div><img alt="${node.title}"
+                                      class="tw-image"
+                                      src="${node.previewThumbnailURL}">
+                              </div>
+                          </div>
+                          <div class="tw-card-body tw-relative">
+                              <div class="offline-side-nav-channel-tooltip__video-body tw-pd-l-1 tw-pd-r-1">
+                                  <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2" title="${node.title}">${node.title}</p>
+                                  <p data-test-selector="offline-followed-channel-tooltip-text"
+                                      class="tw-c-text-alt-2">${node.viewCount.toLocaleString()}회 시청</p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </a>`;
+      }
+      html += `<a class="tbs-link tw-block tw-full-width tw-interactable tw-interactable--default tw-interactable--hover-enabled"
+                        href="/${channel_info.user.login}/videos/all">
+                        <div class="tw-align-center tw-pd-05">
+                            <p class="tw-c-text-base">최근 동영상 모두 보기</p>
+                        </div>
+                    </a></div>
+                  </div>
+              </div>
+          </div>
+      </div>`;
+      return html;
+    }
+  }
+
+  /**
+   * Find target from event by class name
+   * @param {Event} event target event
+   * @param {string} class_name class name to find
+   * @param {number} max_bubble_count maximum recursive depth, default is 10
+   */
+  function findEventTargetbyClassName(event, class_name, max_bubble_count = 20) {
+    let current_target = event.target;
+    let bubble_count = 0;
+    while (bubble_count < max_bubble_count && current_target !== null) {
+      if (current_target.classList.contains(class_name)) {
+        return current_target;
+      }
+      current_target = current_target.parentElement;
+      bubble_count++;
+    }
+    return null;
+  }
+
+  /**
    * Register global event listeners
    */
   function registerEventListeners() {
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', function(e) {
       if (e.target) {
-        let current_target = e.target;
-        while (current_target !== null) {
-          if (current_target.classList.contains('side-nav-card__link')) {
-            if (current_target.classList.contains('tbs-group-header')) {
-              const group_index = current_target.dataset.tbsGroupIndex;
-              const group = groups[group_index];
-              setGroupOpened(group['group_name'], !group['is_opened']);
-              e.preventDefault();
-              return;
-            } else if (current_target.classList.contains('tbs-group-item')) {
-              const href = current_target.getAttribute('href');
-              reactHistory.push(href);
-              e.preventDefault();
-              return;
-            }
+        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+        if (card !== null) {
+          if (card.classList.contains('tbs-group-header')) {
+            const group_index = card.dataset.tbsGroupIndex;
+            const group = groups[group_index];
+            setGroupOpened(group['group_name'], !group['is_opened']);
+            e.preventDefault();
+            return;
           }
-          current_target = current_target.parentElement;
+        }
+        const link = findEventTargetbyClassName(e, 'tbs-link');
+        if (link !== null) {
+          const href = link.getAttribute('href');
+          console.log(href);
+          reactHistory.push(href);
+          e.preventDefault();
+          return;
         }
       }
-    });
+    }, false);
+    document.addEventListener('mouseover', function(e) {
+      if (e.target) {
+        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+        if (card !== null) {
+          if (card.classList.contains('tbs-group-item')) {
+            const group_index = card.dataset.tbsGroupIndex;
+            const group = groups[group_index];
+            const channel_name = card.dataset.tbsChannel;
+            const channel_info = getChannelInfoByName(group['group_name'], channel_name);
+            if (channel_info !== null) {
+              showChannelOverlay(card, channel_info);
+            }
+            e.preventDefault();
+            return;
+          }
+        }
+
+        const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
+        console.log(cardOverlay);
+        if (cardOverlay !== null) {
+          shouldShowOverlay = true;
+          e.preventDefault();
+          return;
+        }
+      }
+    }, false);
+    document.addEventListener('mouseout', function(e) {
+      if (e.target) {
+        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+        if (card !== null) {
+          if (card.classList.contains('tbs-group-item')) {
+            shouldShowOverlay = false;
+            debouncedHideOverlay();
+            e.preventDefault();
+            return;
+          }
+        }
+
+        const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
+        if (cardOverlay !== null) {
+          shouldShowOverlay = false;
+          debouncedHideOverlay();
+          e.preventDefault();
+          return;
+        }
+      }
+    }, false);
   }
 
   /**
@@ -676,6 +911,7 @@
         requestFollowedSectionData();
         checkFollowingUiUpdated();
       }
+      requestFollowedSectionData();
     } catch (err) {
       setTimeout(checkRootUiUpdated, 500);
     }
