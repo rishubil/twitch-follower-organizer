@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.1.3
+// @version     0.1.4
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
 // @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
@@ -563,14 +563,14 @@
     }
     tbsEl.innerHTML = tbsHtml;
 
-    const sideNavHeaderEl = document.querySelector('.side-nav-section:first-child .side-nav-header');
-    if (sideNavHeaderEl !== null) {
-      let addGroupButtonEl = sideNavHeaderEl.getElementsByClassName('tbs-add-group-button');
+    const sideNavHeaderTextEl = document.querySelector('.side-nav-section:first-child .side-nav-header h5');
+    if (sideNavHeaderTextEl !== null) {
+      let addGroupButtonEl = sideNavHeaderTextEl.getElementsByClassName('tbs-add-group-button');
       if (addGroupButtonEl.length === 0) {
         addGroupButtonEl = document.createElement('button');
-        sideNavHeaderEl.appendChild(addGroupButtonEl);
-        addGroupButtonEl.outerHTML = `<button aria-label="그룹 추가" data-a-target="whisper-box-button"
-          class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative tw-mg-t-1 tw-mg-b-1"><span
+        sideNavHeaderTextEl.appendChild(addGroupButtonEl);
+        addGroupButtonEl.outerHTML = `<button aria-label="그룹 추가"
+          class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative tw-mg-l-1"><span
               class="tw-button-icon__icon">
               <div style="width: 2rem; height: 2rem;">
                   <div class="tw-icon">
@@ -653,7 +653,7 @@
                   </div>
                 </div><div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
                     data-a-target="side-nav-live-status">
-                    <button aria-label="그룹 수정" data-a-target="whisper-box-button"
+                    <button aria-label="그룹 수정"
                       class="tbs-edit-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"
                       data-tbs-group-index="${group_index}"><span
                           class="tw-button-icon__icon">
@@ -1051,7 +1051,7 @@
                     </div>
                   </div>
                   <div class="tw-mg-t-1 tw-align-items-center tw-flex tw-flex-grow-1 tw-flex-shrink-1 tw-full-width tw-justify-content-between">`
-                  + (group['group_name'] !== UNKNOWN_GROUP_NAME ? `<button aria-label="삭제" data-a-target="whisper-box-button"
+                  + (group['group_name'] !== UNKNOWN_GROUP_NAME ? `<button aria-label="삭제"
                       class="tbs-group-setting-delete-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
                           class="tw-button-icon__icon">
                           <div style="width: 2rem; height: 2rem;">
@@ -1069,7 +1069,7 @@
                               </div>
                           </div>
                       </span></button>`: `<div></div>`) + `<div>
-                      <button aria-label="취소" data-a-target="whisper-box-button"
+                      <button aria-label="취소"
                         class="tbs-group-setting-cancel-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
                             class="tw-button-icon__icon">
                             <div style="width: 2rem; height: 2rem;">
@@ -1084,7 +1084,7 @@
                                 </div>
                             </div>
                         </span></button>
-                      <button aria-label="저장" data-a-target="whisper-box-button"
+                      <button aria-label="저장"
                         class="tbs-group-setting-save-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
                             class="tw-button-icon__icon">
                             <div style="width: 2rem; height: 2rem;">
