@@ -1,9 +1,13 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.0.1
+// @version     0.1.0
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
+// @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
+// @homepage    https://github.com/rishubil/twitch-follower-organizer/
+// @downloadURL https://raw.githubusercontent.com/rishubil/twitch-follower-organizer/master/twitch-follower-organizer.user.js
+// @updateURL   https://raw.githubusercontent.com/rishubil/twitch-follower-organizer/master/twitch-follower-organizer.user.js
 // @include     *://*.twitch.tv/*
 // @require     https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js
 // @run-at      document-start
