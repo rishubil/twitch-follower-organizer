@@ -26,6 +26,7 @@
    * @property {string} group_name - The name of group
    * @property {boolean} is_opened - The state of group is opened or not
    * @property {boolean} hide_offline - Whether to show channels that are offline
+   * @property {string} color - The Color of group
    * @property {?string[]} channels - List of channels in the group (UNKNOWN group has null value)
    */
 
@@ -52,7 +53,7 @@
   /**
    * @type {boolean} Whether to show overlay
    */
-  let shouldShowOverlay = false;
+  let shouldShowCardOverlay = false;
 
   /**
    * Load groups from GM storage
@@ -62,6 +63,7 @@
       'group_name': UNKNOWN_GROUP_NAME,
       'is_opened': false,
       'hide_offline': true,
+      'color': '#a970ff',
       'channels': null
     }];
     groups = GM_getValue('groups', default_groups);
@@ -101,6 +103,7 @@
       'group_name': group_name,
       'is_opened': false,
       'hide_offline': true,
+      'color': '#a970ff',
       'channels': []
     });
     saveGroups();
@@ -153,7 +156,7 @@
     if (channel_infos == undefined) {
       return null;
     }
-    const index = _.findIndex(channel_infos, function(channel_info) {
+    const index = _.findIndex(channel_infos, function (channel_info) {
       return channel_info.user.login === channel_name;
     });
     if (index === -1) {
@@ -196,6 +199,25 @@
       return;
     }
     group['hide_offline'] = hide_offline;
+    saveGroups();
+    renderFollowedSection();
+  }
+
+  /**
+   * Update `color` of group by group name
+   * 
+   * This function will save the new groups and render UI.
+   * If there is no group named `group_name`, do nothing.
+   * 
+   * @param {string} group_name The name of group
+   * @param {string} color `color` value to set
+   */
+  function setColor(group_name, color) {
+    const group = getGroupByName(group_name);
+    if (group === null) {
+      return;
+    }
+    group['color'] = color;
     saveGroups();
     renderFollowedSection();
   }
@@ -303,6 +325,22 @@
    */
   function injectStyle() {
     GM_addStyle(`
+      .tw-channel-status-indicator {
+        background-color: var(--color-fill-live);
+        border-radius: var(--border-radius-rounded);
+        width: 0.8rem;
+        height: 0.8rem;
+        display: inline-block;
+        position: relative;
+      }
+      .tw-channel-status-indicator.tbs-offline {
+        background-color: #717171;
+      }
+      .tw-aspect {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+      }
       .side-nav-section:first-child .tw-transition {
         display: none!important;
       }
@@ -311,6 +349,12 @@
       }
       .side-nav-section:first-child .twitch-better-sidebar .tw-transition {
         display: block!important;
+      }
+      .tbs-group-header .side-nav-card__live-status {
+        display:none;
+      }
+      .tbs-group-header:hover .side-nav-card__live-status {
+        display:block;
       }
       .tbs-group-item {
         background: #18181b;
@@ -328,6 +372,17 @@
       }
       .tbs-card-overlay {
         position: absolute;
+        z-index: 5100;
+      }
+      .tbs-group-setting-overlay {
+        position: absolute;
+        z-index: 5200;
+      }
+      .tbs-group-setting {
+        width: 22rem;
+      }
+      .tbs-group-settings-error {
+        display: none;
       }
     `);
   }
@@ -448,7 +503,7 @@
   }
 
   /**
-   * Generate HTML string of group to render
+   * Generate HTML string of group to render for group
    * @param {number} group_index The index of groups
    * @param {ChannelInfo[]} channel_infos List of ChannelInfo in the group
    * @return {string} Generated HTML string
@@ -461,9 +516,9 @@
     const is_someone_live = _.some(channel_infos, function (channel_info) {
       return channel_info.content.viewersCount !== undefined;
     });
-    const total_viewers_string = _.sumBy(channel_infos, function (channel_info) {
+    const total_live_string = _.sumBy(channel_infos, function (channel_info) {
       if (channel_info.content.viewersCount !== undefined) {
-        return channel_info.content.viewersCount;
+        return 1;
       }
       return 0;
     }).toLocaleString();
@@ -487,12 +542,12 @@
               <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
                 <figure aria-label="${group['group_name']}" class="tw-avatar tw-avatar--size-30">`
       + (group['is_opened']
-        ? `<svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="${group['group_name']}" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="#a970ff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        ? `<svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="${group['group_name']}" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="${group['color']}" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" />
                     <path d="M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" />
                   </svg>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="${group['group_name']}" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="#a970ff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        : `<svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="${group['group_name']}" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="${group['color']}" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
                   </svg>`
@@ -503,27 +558,32 @@
                   <div class="side-nav-card__title tw-align-items-center tw-flex">
                     <p data-a-target="side-nav-title"
                       class="tw-c-text-alt tw-ellipsis tw-ellipsis tw-flex-grow-1 tw-font-size-5 tw-line-height-heading tw-semibold"
-                      title="${group['group_name']}"><span>${group['group_name']}</span></p>
+                      title="${group['group_name']} (${total_live_string}/${channel_infos.length})"><span>${group['group_name']} (${total_live_string}/${channel_infos.length})</span></p>
                   </div>
                   <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">
                     <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
                       title="${display_names_string}">${display_names_string}</p>
                   </div>
-                </div>`
-      + (is_someone_live
-        ? `<div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
+                </div><div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
                     data-a-target="side-nav-live-status">
-                    <div class="tw-align-items-center tw-flex">
-                      <div class="ScChannelStatusIndicator-sc-1cf6j56-0 fSVvnY tw-channel-status-indicator"
-                        data-test-selector="0"></div>
-                      <div class="tw-mg-l-05"><span aria-label="시청자 ${total_viewers_string}명"
-                          class="tw-c-text-alt tw-font-size-6">${total_viewers_string}</span></div>
-                    </div>
-                  </div>`
-        : `<div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
-                    data-a-target="side-nav-live-status"><span
-                      class="tw-c-text-alt tw-font-size-6">오프라인</span></div>`
-      ) + `</div>
+                    <button aria-label="그룹 수정" data-a-target="whisper-box-button"
+                      class="tbs-edit-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"
+                      data-tbs-group-index="${group_index}"><span
+                          class="tw-button-icon__icon">
+                          <div style="width: 2rem; height: 2rem;">
+                              <div class="tw-icon">
+                                  <div class="tw-aspect">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#dedee3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+                                      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+                                    </svg>
+                                  </div>
+                              </div>
+                          </div>
+                      </span></button>
+                  </div>
+                </div>
             </a></div>
         </div>
       </div>` + group_item_html + `
@@ -531,7 +591,7 @@
   }
 
   /**
-   * Generate HTML string of channel to render
+   * Generate HTML string of channel to render for group item
    * @param {number} group_index The index of groups
    * @param {ChannelInfo} channel_info ChannelInfo to render
    * @return {string} Generated HTML string
@@ -622,7 +682,7 @@
    */
   function getOverlay() {
     let tbsoEl = document.getElementsByClassName('twitch-better-sidebar-overlay');
-    if (tbsoEl.length === 0){
+    if (tbsoEl.length === 0) {
       tbsoEl = document.createElement('div');
       tbsoEl.classList.add('twitch-better-sidebar-overlay');
       document.querySelector('body').appendChild(tbsoEl);
@@ -641,18 +701,24 @@
   }
 
   /**
-   * Hide overlay
+   * Clear card overlay
+   * @param {boolean} [needCheck=true] Whether check `shouldShowCardOverlay`
    */
-  function HideOverlay() {
-    if (!shouldShowOverlay) {
-      clearOverlay();
+  function clearCardOverlay(needCheck = true) {
+    if (needCheck && shouldShowCardOverlay) {
+      return;
+    }
+    const tbsoEl = getOverlay();
+    const cardOverlay = tbsoEl.getElementsByClassName('tbs-card-overlay');
+    if (cardOverlay.length !== 0) {
+      _.forEach(cardOverlay, function(o) {o.remove();});
     }
   }
 
   /**
-   * @type {function} Hide overlay, but debounced
+   * @type {function} Clear card overlay, but debounced
    */
-  const debouncedHideOverlay = _.debounce(HideOverlay, 200);
+  const debouncedClearCardOverlay = _.debounce(clearCardOverlay, 200);
 
   /**
    * Show Channel's overlay
@@ -661,7 +727,7 @@
    */
   function showChannelOverlay(card, channel_info) {
     const tbsoEl = getOverlay();
-    clearOverlay();
+    clearCardOverlay(false);
 
     const rect = card.getBoundingClientRect();
     const x = rect.x + rect.width;
@@ -676,9 +742,14 @@
 
     tbsoEl.appendChild(innerOverlay);
 
-    shouldShowOverlay = true;
+    shouldShowCardOverlay = true;
   }
 
+  /**
+   * Generate HTML string of channel to render for card overlay
+   * @param {ChannelInfo} channel_info ChannelInfo to render
+   * @return {string} Generated HTML string
+   */
   function generateTbsCardOverlayHtml(channel_info) {
     const is_live = channel_info.content.viewersCount !== undefined;
     if (is_live) {
@@ -745,6 +816,195 @@
   }
 
   /**
+   * Clear group setting overlay
+   */
+  function clearGroupSettingOverlay() {
+    const tbsoEl = getOverlay();
+    const groupSettingOverlay = tbsoEl.getElementsByClassName('tbs-group-setting-overlay');
+    if (groupSettingOverlay.length !== 0) {
+      _.forEach(groupSettingOverlay, function(o) {o.remove();});
+    }
+  }
+
+  /**
+   * Save group from setting overlay
+   * 
+   * If there is no group setting overlay, do nothing.
+   * 
+   * @return {?string} Return null if save successfully, else error text.
+   */
+  function saveGroupFromSettingOverlay() {
+    let groupSettingEl = document.getElementsByClassName('tbs-group-setting');
+    if (groupSettingEl.length === 0) {
+      return;
+    } else {
+      groupSettingEl = groupSettingEl[0];
+    }
+    const target_group_name = groupSettingEl.dataset.tbsGroupName;
+    const group = getGroupByName(target_group_name);
+
+    const group_name = groupSettingEl.getElementsByClassName('tbs-group-setting-group-name')[0].value;
+    const color = groupSettingEl.getElementsByClassName('tbs-group-setting-color')[0].value;
+    const hide_offline = groupSettingEl.getElementsByClassName('tbs-group-setting-hide-offline')[0].value === 'true';
+    
+    if (group['group_name'] !== group_name && findGroupIndexByName(group_name) !== -1) {
+      // group_name is already taken
+      return "이미 존재하는 그룹 제목입니다.";
+    }
+
+    group['group_name'] = group_name;
+    group['color'] = color;
+    group['hide_offline'] = hide_offline;
+
+    saveGroups();
+
+    return null;
+  }
+
+  /**
+   * Delete group from setting overlay
+   * 
+   * If there is no group setting overlay, do nothing.
+   */
+  function deleteGroupFromSettingOverlay() {
+    let groupSettingEl = document.getElementsByClassName('tbs-group-setting');
+    if (groupSettingEl.length === 0) {
+      return;
+    } else {
+      groupSettingEl = groupSettingEl[0];
+    }
+    const target_group_name = groupSettingEl.dataset.tbsGroupName;
+    removeGroup(target_group_name);
+  }
+
+  /**
+   * Show group setting overlay
+   * @param {Group} group group to change setting
+   */
+  function showGroupSettingOverlay(group) {
+    const tbsoEl = getOverlay();
+    clearGroupSettingOverlay();
+
+    const sideBarEl = document.getElementById('sideNav');
+    const rect = sideBarEl.getBoundingClientRect();
+    const x = rect.x + rect.width;
+    const y = rect.y + 48;
+
+    const innerOverlay = document.createElement('div');
+    innerOverlay.classList.add('tbs-group-setting-overlay');
+    innerOverlay.style.left = `${x}px`;
+    innerOverlay.style.top = `${y}px`;
+
+    innerOverlay.innerHTML = generateTbsGroupSettingOverlayHtml(group);
+
+    tbsoEl.appendChild(innerOverlay);
+  }
+
+  /**
+   * Generate HTML string of channel to render for group setting overlay
+   * @param {Group} group group to render
+   * @return {string} Generated HTML string
+   */
+  function generateTbsGroupSettingOverlayHtml(group) {
+    return `<div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
+      style="transition-delay: 0ms; transition-duration: 250ms;">
+      <div class="tw-pd-l-1">
+          <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block"
+              role="dialog">
+              <div class="tbs-group-setting tw-pd-x-05 tw-pd-y-05" data-tbs-group-name="${group['group_name']}">
+                <div class="tw-pd-1">
+                  <div class="tw-flex-grow-1 tw-font-size-6 tw-form-group tw-relative">
+                    <div>
+                      <div class="tw-mg-b-05">
+                        <label class="tw-form-label">그룹 제목</label>
+                      </div>
+                      <input type="text"
+                        class="tbs-group-setting-group-name tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
+                        autocapitalize="off" autocorrect="off" autocomplete="off"
+                        spellcheck="false" value="${group['group_name']}">
+                    </div>
+                    <div>
+                      <div class="tw-mg-b-05 tw-mg-t-1">
+                        <label class="tw-form-label">색상</label>
+                      </div>
+                      <input type="text"
+                        class="tbs-group-setting-color tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
+                        autocapitalize="off" autocorrect="off" autocomplete="off"
+                        spellcheck="false" value="${group['color']}">
+                    </div>
+                    <div>
+                      <div class="tw-mg-b-05 tw-mg-t-1">
+                        <label class="tw-form-label">오프라인 채널 표시 여부</label>
+                      </div>
+                      <select
+                        class="tbs-group-setting-hide-offline tw-block tw-border-radius-medium tw-font-size-6 tw-full-width tw-pd-l-1 tw-pd-r-3 tw-pd-y-05 tw-select">
+                        <option value="false"${group['hide_offline'] ? '' : 'selected="selected"'}>표시함</option>
+                        <option value="true"${group['hide_offline'] ? 'selected="selected"': ''}>표시하지 않음</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="tw-mg-t-1 tw-align-items-center tw-flex tw-flex-grow-1 tw-flex-shrink-1 tw-full-width tw-justify-content-between">
+                    <button aria-label="삭제" data-a-target="whisper-box-button"
+                      class="tbs-group-setting-delete-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                          class="tw-button-icon__icon">
+                          <div style="width: 2rem; height: 2rem;">
+                              <div class="tw-icon">
+                                  <div class="tw-aspect">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#e91916" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                      <line x1="4" y1="7" x2="20" y2="7" />
+                                      <line x1="10" y1="11" x2="10" y2="17" />
+                                      <line x1="14" y1="11" x2="14" y2="17" />
+                                      <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                      <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                    </svg>
+                                  </div>
+                              </div>
+                          </div>
+                      </span></button>
+                    <div>
+                      <button aria-label="취소" data-a-target="whisper-box-button"
+                        class="tbs-group-setting-cancel-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                            class="tw-button-icon__icon">
+                            <div style="width: 2rem; height: 2rem;">
+                                <div class="tw-icon">
+                                    <div class="tw-aspect">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                      </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </span></button>
+                      <button aria-label="저장" data-a-target="whisper-box-button"
+                        class="tbs-group-setting-save-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                            class="tw-button-icon__icon">
+                            <div style="width: 2rem; height: 2rem;">
+                                <div class="tw-icon">
+                                    <div class="tw-aspect">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" />
+                                        <circle cx="12" cy="14" r="2" />
+                                        <polyline points="14 4 14 8 8 8 8 4" />
+                                      </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </span></button>
+                    </div>
+                  </div>
+                  <div class="tbs-group-settings-error tw-mg-t-1"></div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>`;
+  }
+
+  /**
    * Find target from event by class name
    * @param {Event} event target event
    * @param {string} class_name class name to find
@@ -767,8 +1027,44 @@
    * Register global event listeners
    */
   function registerEventListeners() {
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       if (e.target) {
+        const editButton = findEventTargetbyClassName(e, 'tbs-edit-button');
+        if (editButton !== null) {
+          const group_index = editButton.dataset.tbsGroupIndex;
+          const group = groups[group_index];
+          showGroupSettingOverlay(group);
+          e.preventDefault();
+          return;
+        }
+        const groupSettingCancelButton = findEventTargetbyClassName(e, 'tbs-group-setting-cancel-button');
+        if (groupSettingCancelButton !== null) {
+          clearGroupSettingOverlay();
+          e.preventDefault();
+          return;
+        }
+        const groupSettingSaveButton = findEventTargetbyClassName(e, 'tbs-group-setting-save-button');
+        if (groupSettingSaveButton !== null) {
+          const saveResult = saveGroupFromSettingOverlay();
+          if (saveResult === null) {
+            clearGroupSettingOverlay();
+            requestFollowedSectionData();
+          } else {
+            const errorEl = document.getElementsByClassName('tbs-group-settings-error')[0];
+            errorEl.style.display = 'block';
+            errorEl.innerHTML = saveResult;
+          }
+          e.preventDefault();
+          return;
+        }
+        const groupSettingDeleteButton = findEventTargetbyClassName(e, 'tbs-group-setting-delete-button');
+        if (groupSettingDeleteButton !== null) {
+          deleteGroupFromSettingOverlay();
+          clearGroupSettingOverlay();
+          renderFollowedSection();
+          e.preventDefault();
+          return;
+        }
         const card = findEventTargetbyClassName(e, 'side-nav-card__link');
         if (card !== null) {
           if (card.classList.contains('tbs-group-header')) {
@@ -782,14 +1078,13 @@
         const link = findEventTargetbyClassName(e, 'tbs-link');
         if (link !== null) {
           const href = link.getAttribute('href');
-          console.log(href);
           reactHistory.push(href);
           e.preventDefault();
           return;
         }
       }
     }, false);
-    document.addEventListener('mouseover', function(e) {
+    document.addEventListener('mouseover', function (e) {
       if (e.target) {
         const card = findEventTargetbyClassName(e, 'side-nav-card__link');
         if (card !== null) {
@@ -807,21 +1102,20 @@
         }
 
         const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
-        console.log(cardOverlay);
         if (cardOverlay !== null) {
-          shouldShowOverlay = true;
+          shouldShowCardOverlay = true;
           e.preventDefault();
           return;
         }
       }
     }, false);
-    document.addEventListener('mouseout', function(e) {
+    document.addEventListener('mouseout', function (e) {
       if (e.target) {
         const card = findEventTargetbyClassName(e, 'side-nav-card__link');
         if (card !== null) {
           if (card.classList.contains('tbs-group-item')) {
-            shouldShowOverlay = false;
-            debouncedHideOverlay();
+            shouldShowCardOverlay = false;
+            debouncedClearCardOverlay();
             e.preventDefault();
             return;
           }
@@ -829,8 +1123,8 @@
 
         const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
         if (cardOverlay !== null) {
-          shouldShowOverlay = false;
-          debouncedHideOverlay();
+          shouldShowCardOverlay = false;
+          debouncedClearCardOverlay();
           e.preventDefault();
           return;
         }
