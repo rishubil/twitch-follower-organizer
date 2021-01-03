@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.1.2
+// @version     0.1.3
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
 // @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
@@ -145,15 +145,20 @@
     if (source_group_index === target_group_index) {
       return;
     }
-    _.pull(
-      groups[source_group_index]['channels'],
-      channel_name
-    );
-    _.pull(
-      groups[target_group_index]['channels'],
-      channel_name
-    )
-    groups[target_group_index]['channels'].push(channel_name);
+    const unknown_group_index = findGroupIndexByName(UNKNOWN_GROUP_NAME);
+    if (source_group_index  !== unknown_group_index) {
+      _.pull(
+        groups[source_group_index]['channels'],
+        channel_name
+      );
+    }
+    if (target_group_index  !== unknown_group_index) {
+      _.pull(
+        groups[target_group_index]['channels'],
+        channel_name
+      )
+      groups[target_group_index]['channels'].push(channel_name);
+    }
     saveGroups();
   }
   
@@ -1154,7 +1159,7 @@
         }
         const editButton = findEventTargetbyClassName(e, 'tbs-edit-button');
         if (editButton !== null) {
-          const group_index = editButton.dataset.tbsGroupIndex;
+          const group_index = Number(editButton.dataset.tbsGroupIndex);
           const group = groups[group_index];
           showGroupSettingOverlay(group);
           e.preventDefault();
@@ -1186,6 +1191,7 @@
           const deleteResult = deleteGroupFromSettingOverlay();
           if (deleteResult === null) {
             clearGroupSettingOverlay();
+            processFollowedSectionData();
             renderFollowedSection();
           } else {
             const errorEl = document.getElementsByClassName('tbs-group-settings-error')[0];
@@ -1198,7 +1204,7 @@
         const card = findEventTargetbyClassName(e, 'side-nav-card__link');
         if (card !== null) {
           if (card.classList.contains('tbs-group-header')) {
-            const group_index = card.dataset.tbsGroupIndex;
+            const group_index = Number(card.dataset.tbsGroupIndex);
             const group = groups[group_index];
             setGroupOpened(group['group_name'], !group['is_opened']);
             e.preventDefault();
@@ -1219,7 +1225,7 @@
         const card = findEventTargetbyClassName(e, 'side-nav-card__link');
         if (card !== null) {
           if (card.classList.contains('tbs-group-item')) {
-            const group_index = card.dataset.tbsGroupIndex;
+            const group_index = Number(card.dataset.tbsGroupIndex);
             const group = groups[group_index];
             const channel_name = card.dataset.tbsChannel;
             const channel_info = getChannelInfoByName(group['group_name'], channel_name);
@@ -1276,8 +1282,8 @@
       if (e.target) {
         const card = findEventTargetbyClassName(e, 'side-nav-card__link');
         if (card !== null && dragged_card !== null) {
-          const dragged_group_index = dragged_card.dataset.tbsGroupIndex;
-          const group_index = card.dataset.tbsGroupIndex;
+          const dragged_group_index = Number(dragged_card.dataset.tbsGroupIndex);
+          const group_index = Number(card.dataset.tbsGroupIndex);
           if (dragged_card.classList.contains('tbs-group-header')) {
             moveGroupPosition(dragged_group_index, group_index);
           } else if (dragged_card.classList.contains('tbs-group-item')) {
