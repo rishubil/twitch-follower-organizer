@@ -690,7 +690,7 @@
   loadGroups();
   injectStyle();
   registerEventListeners();
-  
+
   window.addEventListener('load', function () {
     checkRootUiUpdated();
   }, false);
