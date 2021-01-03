@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.1.0
+// @version     0.1.1
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
 // @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
@@ -521,6 +521,9 @@
     const channel_infos = followedSectionData[0].data.personalSections[0].items;
     for (let index = 0; index < channel_infos.length; index++) {
       const channel_info = channel_infos[index];
+      if (channel_info.user === null) {
+        continue;
+      }
       const channel = channel_info.user.login;
       const group = getGroupByChannel(channel);
       grouped_channel_infos[group['group_name']].push(channel_info);
