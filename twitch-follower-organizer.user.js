@@ -60,6 +60,8 @@
    */
   let shouldShowCardOverlay = false;
 
+  let dragged_card = false;
+
   /**
    * Load groups from GM storage
    */
@@ -127,6 +129,44 @@
       return;
     }
     groups.splice(group_index, 1);
+    saveGroups();
+  }
+
+
+  /**
+   * Move channel between speific groups using index and channel name
+   * @param {number} source_group_index Source group index
+   * @param {number} target_group_index Target group index
+   * @param {string} channel_name Channel name to move
+   */
+  function moveChannelBetweenGroups(source_group_index, target_group_index, channel_name) {
+    if (source_group_index === target_group_index) {
+      return;
+    }
+    _.pull(
+      groups[source_group_index]['channels'],
+      channel_name
+    );
+    _.pull(
+      groups[target_group_index]['channels'],
+      channel_name
+    )
+    groups[target_group_index]['channels'].push(channel_name);
+    saveGroups();
+  }
+  
+  /**
+   * Move group position by inserting source group into target group index
+   * @param {*} source_group_index Source group index
+   * @param {*} target_group_index arget group index
+   */
+  function moveGroupPosition(source_group_index, target_group_index) {
+    if (source_group_index === target_group_index) {
+      return;
+    }
+    const source_group = groups[source_group_index];
+    groups.splice(source_group_index, 1);
+    groups.splice(target_group_index, 0, source_group);
     saveGroups();
   }
 
@@ -575,7 +615,7 @@
         <div>
           <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
               class="tbs-group-header side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-tbs-group-index="${group_index}" href="#">
+              data-tbs-group-index="${group_index}" href="#" draggable="true">
               <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
                 <figure aria-label="${group['group_name']}" class="tw-avatar tw-avatar--size-30">`
       + (group['is_opened']
@@ -645,7 +685,7 @@
         <div>
           <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
               class="tbs-group-item tbs-link side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-test-selector="followed-channel" data-tbs-group-index="${group_index}" data-tbs-channel="${channel_info.user.login}" href="/${channel_info.user.login}">
+              data-test-selector="followed-channel" data-tbs-group-index="${group_index}" data-tbs-channel="${channel_info.user.login}" href="/${channel_info.user.login}" draggable="true">
               <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
                 <figure aria-label="${channel_info.user.displayName} (${channel_info.user.login})" class="tw-avatar tw-avatar--size-30"><img
                     class="tw-block tw-border-radius-rounded tw-image tw-image-avatar"
@@ -685,7 +725,7 @@
         <div>
           <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
               class="tbs-group-item tbs-link side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-test-selector="followed-channel" data-tbs-group-index="${group_index}" data-tbs-channel="${channel_info.user.login}" href="/${channel_info.user.login}">
+              data-test-selector="followed-channel" data-tbs-group-index="${group_index}" data-tbs-channel="${channel_info.user.login}" href="/${channel_info.user.login}" draggable="true">
               <div
                 class="side-nav-card__avatar side-nav-card__avatar--offline tw-align-items-center tw-flex-shrink-0">
                 <figure aria-label="${channel_info.user.displayName} (${channel_info.user.login})" class="tw-avatar tw-avatar--size-30"><img
@@ -1214,6 +1254,39 @@
           return;
         }
       }
+    }, false);
+    document.addEventListener('dragstart', function (e) {
+      if (e.target) {
+        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+        if (card !== null) {
+          dragged_card = card;
+        }
+      }
+    }, false);
+    document.addEventListener("dragover", function(e) {
+      // prevent default to allow drop
+      e.preventDefault();
+    }, false);
+    document.addEventListener('drop', function (e) {
+      if (e.target) {
+        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+        if (card !== null && dragged_card !== null) {
+          const dragged_group_index = dragged_card.dataset.tbsGroupIndex;
+          const group_index = card.dataset.tbsGroupIndex;
+          if (dragged_card.classList.contains('tbs-group-header')) {
+            moveGroupPosition(dragged_group_index, group_index);
+          } else if (dragged_card.classList.contains('tbs-group-item')) {
+            const dragged_channel_name = dragged_card.dataset.tbsChannel;
+            moveChannelBetweenGroups(dragged_group_index, group_index, dragged_channel_name);
+          }
+          processFollowedSectionData();
+          renderFollowedSection();
+          dragged_card = null;
+          e.preventDefault();
+          return;
+        }
+      }
+      dragged_card = null;
     }, false);
   }
 
