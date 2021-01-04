@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.1.5
+// @version     0.1.6
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
 // @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
@@ -64,6 +64,9 @@
    */
   let shouldShowCardOverlay = false;
 
+  /**
+   * @type {Element} Dragged card element
+   */
   let dragged_card = false;
 
   /**
@@ -454,6 +457,7 @@
     const token = getCookie('auth-token');
     const unique_id = getCookie('unique_id');
 
+    console.log('[TBS] requesting FollowedSectionData...');
     fetch('https://gql.twitch.tv/gql', {
       'method': 'POST',
       'headers': {
@@ -499,6 +503,7 @@
       .then(data => {
         followedSectionData = data;
         processFollowedSectionData();
+        setTimeout(debouncedRequestFollowedSectionData, 1000 * 60 * 5);
       });
   }
 
@@ -1137,7 +1142,6 @@
               const group_name = `그룹 ${groupNumber}`;
               addGroup(`그룹 ${groupNumber}`);
               processFollowedSectionData();
-              renderFollowedSection();
               const group = getGroupByName(group_name);
               showGroupSettingOverlay(group);
               e.preventDefault();
@@ -1171,7 +1175,6 @@
           if (saveResult === null) {
             clearGroupSettingOverlay();
             processFollowedSectionData();
-            renderFollowedSection();
           } else {
             const errorEl = document.getElementsByClassName('tbs-group-settings-error')[0];
             errorEl.style.display = 'block';
@@ -1186,7 +1189,6 @@
           if (deleteResult === null) {
             clearGroupSettingOverlay();
             processFollowedSectionData();
-            renderFollowedSection();
           } else {
             const errorEl = document.getElementsByClassName('tbs-group-settings-error')[0];
             errorEl.style.display = 'block';
@@ -1285,7 +1287,6 @@
             moveChannelBetweenGroups(dragged_group_index, group_index, dragged_channel_name);
           }
           processFollowedSectionData();
-          renderFollowedSection();
           dragged_card = null;
           e.preventDefault();
           return;
