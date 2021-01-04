@@ -26,7 +26,7 @@
 
   /**
    * User defined channel group, with some states and options
-   * @typedef {Object} Group
+   * @typedef {object} Group
    * @property {string} group_name - The name of group
    * @property {boolean} is_opened - The state of group is opened or not
    * @property {boolean} hide_offline - Whether to show channels that are offline
@@ -36,7 +36,7 @@
 
   /**
    * Channel infomation from Twitch API
-   * @typedef {ojbect} ChannelInfo
+   * @typedef {object} ChannelInfo
    */
 
   /**
