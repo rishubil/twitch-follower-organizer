@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.1.4
+// @version     0.1.5
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
 // @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
@@ -752,10 +752,11 @@
                       title="${channel_info.user.displayName} (${channel_info.user.login})"><span>${channel_info.user.displayName} <span
                           class="intl-login">(${channel_info.user.login})</span></span></p>
                   </div>
-                  <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">
-                    <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
-                      title="새 동영상 ${channel_info.content.edges.length.toLocaleString()}개">새 동영상 ${channel_info.content.edges.length.toLocaleString()}개</p>
-                  </div>
+                  <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">`
+                    + (channel_info.content.edges.length > 0
+                       ? `<p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading" title="새 동영상 ${channel_info.content.edges.length.toLocaleString()}개">새 동영상 ${channel_info.content.edges.length.toLocaleString()}개</p>`
+                       : `<p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"></p>`
+                    )+ `</div>
                 </div>
                 <div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
                   data-a-target="side-nav-live-status"><span
