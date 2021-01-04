@@ -475,29 +475,7 @@
         'sec-fetch-dest': 'empty',
         'referer': 'https://www.twitch.tv/'
       },
-      'body': `[
-        {
-          "operationName": "PersonalSections",
-          "variables": {
-            "input": {
-              "sectionInputs": [
-                "FOLLOWED_SECTION"
-              ],
-              "recommendationContext": {
-                "platform": "web"
-              }
-            },
-            "channelLogin": null,
-            "withChannelUser": false
-          },
-          "extensions": {
-            "persistedQuery": {
-              "version": 1,
-              "sha256Hash": "469efc9442aa2b7634a3ab36eae1778b78ec7ccf062d2b17833afb0e66b78a25"
-            }
-          }
-        }
-      ]`
+      'body': `[{"operationName":"PersonalSections","variables":{"input":{"sectionInputs":["FOLLOWED_SECTION","RECOMMENDED_SECTION"],"recommendationContext":{"platform":"web"}},"channelLogin":null,"withChannelUser":false},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"469efc9442aa2b7634a3ab36eae1778b78ec7ccf062d2b17833afb0e66b78a25"}}}]`
     })
       .then(response => response.json())
       .then(data => {
