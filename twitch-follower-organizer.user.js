@@ -379,7 +379,7 @@
    * Inject CSS styles
    */
   function injectStyle() {
-    GM_addStyle(`
+    GM_addStyle(/*css*/`
       .tw-channel-status-indicator {
         background-color: var(--color-fill-live);
         border-radius: var(--border-radius-rounded);
@@ -406,10 +406,10 @@
         display: block!important;
       }
       .tbs-group-header .side-nav-card__live-status {
-        display:none;
+        display: none;
       }
       .tbs-group-header:hover .side-nav-card__live-status {
-        display:block;
+        display: block;
       }
       .tbs-group-item {
         background: #18181b;
@@ -555,7 +555,6 @@
     }
 
     let tbsHtml = '';
-    let group_index = 0;
     for (let group_index = 0; group_index < groups.length; group_index++) {
       const group = groups[group_index];
       const channel_infos = grouped_channel_infos[group['group_name']];
@@ -569,22 +568,26 @@
       if (addGroupButtonEl.length === 0) {
         addGroupButtonEl = document.createElement('button');
         sideNavHeaderTextEl.appendChild(addGroupButtonEl);
-        addGroupButtonEl.outerHTML = `<button aria-label="그룹 추가"
-          class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative tw-mg-l-1"><span
-              class="tw-button-icon__icon">
-              <div style="width: 2rem; height: 2rem;">
-                  <div class="tw-icon">
-                      <div class="tw-aspect">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                          <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
-                          <line x1="12" y1="10" x2="12" y2="16" />
-                          <line x1="9" y1="13" x2="15" y2="13" />
-                        </svg>
-                      </div>
-                  </div>
-              </div>
-          </span></button>`;
+
+        const templateAddGroupButton = _.template(/*html*/`
+          <button aria-label="그룹 추가"
+            class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative tw-mg-l-1"><span
+                class="tw-button-icon__icon">
+                <div style="width: 2rem; height: 2rem;">
+                    <div class="tw-icon">
+                        <div class="tw-aspect">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                            <line x1="12" y1="10" x2="12" y2="16" />
+                            <line x1="9" y1="13" x2="15" y2="13" />
+                          </svg>
+                        </div>
+                    </div>
+                </div>
+            </span></button>
+        `);
+        addGroupButtonEl.outerHTML = templateAddGroupButton();
       }
     }
   }
@@ -619,62 +622,76 @@
         }
       }
     }
-    return `<div class="tbs-group">
-      <div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
-        style="transition: transform 250ms ease 0ms, opacity;">
-        <div>
-          <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
-              class="tbs-group-header side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-tbs-group-index="${group_index}" href="#" draggable="true">
-              <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
-                <figure aria-label="${group['group_name']}" class="tw-avatar tw-avatar--size-30">`
-      + (group['is_opened']
-        ? `<svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="${group['group_name']}" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="${group['color']}" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" />
-                    <path d="M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" />
-                  </svg>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="${group['group_name']}" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="${group['color']}" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
-                  </svg>`
-      ) + `</figure>
-              </div>
-              <div class="tw-ellipsis tw-flex tw-full-width tw-justify-content-between">
-                <div data-a-target="side-nav-card-metadata" class="tw-ellipsis tw-full-width tw-mg-l-1">
-                  <div class="side-nav-card__title tw-align-items-center tw-flex">
-                    <p data-a-target="side-nav-title"
-                      class="tw-c-text-alt tw-ellipsis tw-ellipsis tw-flex-grow-1 tw-font-size-5 tw-line-height-heading tw-semibold"
-                      title="${group['group_name']} (${total_live_string}/${channel_infos.length})"><span>${group['group_name']} (${total_live_string}/${channel_infos.length})</span></p>
-                  </div>
-                  <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">
-                    <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
-                      title="${display_names_string}">${display_names_string}</p>
-                  </div>
-                </div><div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
-                    data-a-target="side-nav-live-status">
-                    <button aria-label="그룹 수정"
-                      class="tbs-edit-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"
-                      data-tbs-group-index="${group_index}"><span
-                          class="tw-button-icon__icon">
-                          <div style="width: 2rem; height: 2rem;">
-                              <div class="tw-icon">
-                                  <div class="tw-aspect">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#dedee3" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
-                                      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
-                                    </svg>
-                                  </div>
-                              </div>
-                          </div>
-                      </span></button>
-                  </div>
+    
+    const templateTbsGroup = _.template(/*html*/`
+      <div class="tbs-group">
+        <div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
+          style="transition: transform 250ms ease 0ms, opacity;">
+          <div>
+            <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
+                class="tbs-group-header side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
+                data-tbs-group-index="<%- group_index %>" href="#" draggable="true">
+                <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
+                  <figure aria-label="<%- group['group_name'] %>" class="tw-avatar tw-avatar--size-30">
+                    <% if (group['is_opened']) { %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="<%- group['group_name'] %>" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" />
+                        <path d="M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" />
+                      </svg>
+                    <% } else { %>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="<%- group['group_name'] %>" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                      </svg>
+                    <% } %>
+                  </figure>
                 </div>
-            </a></div>
+                <div class="tw-ellipsis tw-flex tw-full-width tw-justify-content-between">
+                  <div data-a-target="side-nav-card-metadata" class="tw-ellipsis tw-full-width tw-mg-l-1">
+                    <div class="side-nav-card__title tw-align-items-center tw-flex">
+                      <p data-a-target="side-nav-title"
+                        class="tw-c-text-alt tw-ellipsis tw-ellipsis tw-flex-grow-1 tw-font-size-5 tw-line-height-heading tw-semibold"
+                        title="<%- group['group_name'] %> (<%- total_live_string %>/<%- channel_infos.length %>)"><span><%- group['group_name'] %> (<%- total_live_string %>/<%- channel_infos.length %>)</span></p>
+                    </div>
+                    <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">
+                      <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
+                        title="<%- display_names_string %>"><%- display_names_string %></p>
+                    </div>
+                  </div><div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
+                      data-a-target="side-nav-live-status">
+                      <button aria-label="그룹 수정"
+                        class="tbs-edit-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"
+                        data-tbs-group-index="<%- group_index %>"><span
+                            class="tw-button-icon__icon">
+                            <div style="width: 2rem; height: 2rem;">
+                                <div class="tw-icon">
+                                    <div class="tw-aspect">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#dedee3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+                                        <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+                                      </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </span></button>
+                    </div>
+                  </div>
+              </a></div>
+          </div>
         </div>
-      </div>` + group_item_html + `
-    </div>`;
+        <%= group_item_html %>
+      </div>
+    `);
+    return templateTbsGroup({
+      'group_index': group_index,
+      'group': group,
+      'group_item_html': group_item_html,
+      'total_live_string': total_live_string,
+      'channel_infos': channel_infos,
+      'display_names_string': display_names_string
+    });
   }
 
   /**
@@ -684,23 +701,18 @@
    * @return {string} Generated HTML string
    */
   function generateTbsGroupItemHtml(group_index, channel_info) {
-    const is_live = channel_info.content.viewersCount !== undefined;
-    if (is_live) {
-      let game_name = '';
-      if (channel_info.content.game !== null) {
-        game_name = channel_info.content.game.displayName;
-      }
-      return `<div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
+    const templateTbsGroupItem = _.template(/*html*/`
+      <div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
         style="transition: transform 250ms ease 0ms, opacity;">
         <div>
           <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
               class="tbs-group-item tbs-link side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-test-selector="followed-channel" data-tbs-group-index="${group_index}" data-tbs-channel="${channel_info.user.login}" href="/${channel_info.user.login}" draggable="true">
-              <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
-                <figure aria-label="${channel_info.user.displayName} (${channel_info.user.login})" class="tw-avatar tw-avatar--size-30"><img
+              data-test-selector="followed-channel" data-tbs-group-index="<%- group_index %>" data-tbs-channel="<%-  channel_info.user.login %>" href="/<%- channel_info.user.login %>" draggable="true">
+              <div class="side-nav-card__avatar <% if (!is_live) { %>side-nav-card__avatar--offline <% } %>tw-align-items-center tw-flex-shrink-0">
+                <figure aria-label="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)" class="tw-avatar tw-avatar--size-30"><img
                     class="tw-block tw-border-radius-rounded tw-image tw-image-avatar"
-                    alt="${channel_info.user.displayName} (${channel_info.user.login})"
-                    src="${channel_info.user.profileImageURL}">
+                    alt="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)"
+                    src="<%- channel_info.user.profileImageURL %>">
                 </figure>
               </div>
               <div class="tw-ellipsis tw-flex tw-full-width tw-justify-content-between">
@@ -708,64 +720,44 @@
                   <div class="side-nav-card__title tw-align-items-center tw-flex">
                     <p data-a-target="side-nav-title"
                       class="tw-c-text-alt tw-ellipsis tw-ellipsis tw-flex-grow-1 tw-font-size-5 tw-line-height-heading tw-semibold"
-                      title="${channel_info.user.displayName} (${channel_info.user.login})"><span>${channel_info.user.displayName} <span
-                          class="intl-login">(${channel_info.user.login})</span></span></p>
+                      title="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)"><span><%- channel_info.user.displayName %> <span
+                          class="intl-login">(<%- channel_info.user.login %>)</span></span></p>
                   </div>
                   <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">
-                    <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
-                      title="${game_name}">${game_name}</p>
+                    <% if (is_live && channel_info.content.game !== null) { %>
+                      <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
+                        title="<%- channel_info.content.game.displayName %>"><%- channel_info.content.game.displayName %></p>
+                    <% } else if (!is_live && channel_info.content.edges.length > 0) { %>
+                      <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
+                        title="새 동영상 <%- channel_info.content.edges.length.toLocaleString() %>개">새 동영상 <%- channel_info.content.edges.length.toLocaleString() %>개</p>
+                    <% } else { %>
+                      <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"></p>
+                    <% } %>
                   </div>
                 </div>
                 <div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
                   data-a-target="side-nav-live-status">
-                  <div class="tw-align-items-center tw-flex">
-                    <div class="ScChannelStatusIndicator-sc-1cf6j56-0 fSVvnY tw-channel-status-indicator"
-                      data-test-selector="0"></div>
-                    <div class="tw-mg-l-05"><span data-test-selector="1" aria-label="시청자 ${channel_info.content.viewersCount.toLocaleString()}명"
-                        class="tw-c-text-alt tw-font-size-6">${channel_info.content.viewersCount.toLocaleString()}</span></div>
-                  </div>
+                  <% if (is_live) { %>
+                    <div class="tw-align-items-center tw-flex">
+                      <div class="ScChannelStatusIndicator-sc-1cf6j56-0 fSVvnY tw-channel-status-indicator"
+                        data-test-selector="0"></div>
+                      <div class="tw-mg-l-05"><span data-test-selector="1" aria-label="시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명"
+                          class="tw-c-text-alt tw-font-size-6"><%- channel_info.content.viewersCount.toLocaleString() %></span></div>
+                    </div>
+                  <% } else { %>
+                    <span class="tw-c-text-alt tw-font-size-6">오프라인</span>
+                  <% } %>
                 </div>
               </div>
             </a></div>
         </div>
-      </div>`;
-    } else {
-      return `<div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
-        style="transition: transform 250ms ease 0ms, opacity;">
-        <div>
-          <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
-              class="tbs-group-item tbs-link side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-test-selector="followed-channel" data-tbs-group-index="${group_index}" data-tbs-channel="${channel_info.user.login}" href="/${channel_info.user.login}" draggable="true">
-              <div
-                class="side-nav-card__avatar side-nav-card__avatar--offline tw-align-items-center tw-flex-shrink-0">
-                <figure aria-label="${channel_info.user.displayName} (${channel_info.user.login})" class="tw-avatar tw-avatar--size-30"><img
-                    class="tw-block tw-border-radius-rounded tw-image tw-image-avatar"
-                    alt="${channel_info.user.displayName} (${channel_info.user.login})"
-                    src="${channel_info.user.profileImageURL}"
-                    title="" style=""></figure>
-              </div>
-              <div class="tw-ellipsis tw-flex tw-full-width tw-justify-content-between">
-                <div data-a-target="side-nav-card-metadata" class="tw-ellipsis tw-full-width tw-mg-l-1">
-                  <div class="side-nav-card__title tw-align-items-center tw-flex">
-                    <p data-a-target="side-nav-title"
-                      class="tw-c-text-alt tw-ellipsis tw-ellipsis tw-flex-grow-1 tw-font-size-5 tw-line-height-heading tw-semibold"
-                      title="${channel_info.user.displayName} (${channel_info.user.login})"><span>${channel_info.user.displayName} <span
-                          class="intl-login">(${channel_info.user.login})</span></span></p>
-                  </div>
-                  <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">`
-                    + (channel_info.content.edges.length > 0
-                       ? `<p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading" title="새 동영상 ${channel_info.content.edges.length.toLocaleString()}개">새 동영상 ${channel_info.content.edges.length.toLocaleString()}개</p>`
-                       : `<p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"></p>`
-                    )+ `</div>
-                </div>
-                <div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
-                  data-a-target="side-nav-live-status"><span
-                    class="tw-c-text-alt tw-font-size-6">오프라인</span></div>
-              </div>
-            </a></div>
-        </div>
-      </div>`;
-    }
+      </div>
+    `);
+    return templateTbsGroupItem({
+      'group_index': group_index,
+      'channel_info': channel_info,
+      'is_live': channel_info.content.viewersCount !== undefined
+    });
   }
 
   /**
@@ -843,68 +835,59 @@
    * @return {string} Generated HTML string
    */
   function generateTbsCardOverlayHtml(channel_info) {
-    const is_live = channel_info.content.viewersCount !== undefined;
-    if (is_live) {
-      return `<div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
-            style="transition-delay: 0ms; transition-duration: 250ms;">
-            <div class="tw-pd-l-1">
-                <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block"
-                    role="dialog">
-                    <div class="tw-pd-x-05 tw-pd-y-05">
-                        <div class="online-side-nav-channel-tooltip__body tw-pd-x-05">
-                            <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2">${channel_info.user.broadcastSettings.title}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-    } else {
-      let html = `<div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
+    const templateTbsCardOverlay = _.template(/*html*/`
+      <div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
         style="transition-delay: 0ms; transition-duration: 250ms;">
         <div class="tw-pd-l-1">
-            <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block"
-                role="dialog">
-                <div class="tw-pd-x-05 tw-pd-y-05">
-                    <div class="">`;
-      for (let i = 0; i < channel_info.content.edges.length; i++) {
-        const node = channel_info.content.edges[i].node;
-        html += `<a class="tbs-link tw-block tw-full-width tw-interactable tw-interactable--default tw-interactable--hover-enabled"
-              href="/videos/${node.id}">
-              <div class="tw-pd-x-05 tw-pd-y-05">
-                  <div class="tw-card tw-relative">
-                      <div class="tw-align-items-center tw-flex tw-flex-nowrap tw-flex-row">
-                          <div
-                              class="tw-border-radius-small tw-card-img tw-card-img--size-8 tw-flex-shrink-0 tw-overflow-hidden">
-                              <div class="ScAspectRatio-sc-1sw3lwy-1 dNNaBC tw-aspect">
-                                  <div class="ScAspectSpacer-sc-1sw3lwy-0 hhnnBG"></div><img alt="${node.title}"
-                                      class="tw-image"
-                                      src="${node.previewThumbnailURL}">
-                              </div>
+          <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block" role="dialog">
+            <div class="tw-pd-x-05 tw-pd-y-05">
+            <% if (is_live) { %>
+              <div class="online-side-nav-channel-tooltip__body tw-pd-x-05">
+                <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2"><%- channel_info.user.broadcastSettings.title %></p>
+              </div>
+            <% } else { %>
+              <div>
+                <% for (let i = 0; i < channel_info.content.edges.length; i++) {
+                  const node = channel_info.content.edges[i].node; %>
+                  <a class="tbs-link tw-block tw-full-width tw-interactable tw-interactable--default tw-interactable--hover-enabled"
+                    href="/videos/<%- node.id %>">
+                    <div class="tw-pd-x-05 tw-pd-y-05">
+                      <div class="tw-card tw-relative">
+                        <div class="tw-align-items-center tw-flex tw-flex-nowrap tw-flex-row">
+                          <div class="tw-border-radius-small tw-card-img tw-card-img--size-8 tw-flex-shrink-0 tw-overflow-hidden">
+                            <div class="ScAspectRatio-sc-1sw3lwy-1 dNNaBC tw-aspect">
+                              <div class="ScAspectSpacer-sc-1sw3lwy-0 hhnnBG"></div><img alt="<%- node.title %>"
+                                class="tw-image" src="<%- node.previewThumbnailURL %>">
+                            </div>
                           </div>
                           <div class="tw-card-body tw-relative">
-                              <div class="offline-side-nav-channel-tooltip__video-body tw-pd-l-1 tw-pd-r-1">
-                                  <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2" title="${node.title}">${node.title}</p>
-                                  <p data-test-selector="offline-followed-channel-tooltip-text"
-                                      class="tw-c-text-alt-2">${node.viewCount.toLocaleString()}회 시청</p>
-                              </div>
+                            <div class="offline-side-nav-channel-tooltip__video-body tw-pd-l-1 tw-pd-r-1">
+                              <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2" title="<%- node.title %>"><%- node.title %></p>
+                              <p data-test-selector="offline-followed-channel-tooltip-text"
+                                class="tw-c-text-alt-2"><%- node.viewCount.toLocaleString() %>회 시청</p>
+                            </div>
                           </div>
-                      </div>
-                  </div>
-              </div>
-          </a>`;
-      }
-      html += `<a class="tbs-link tw-block tw-full-width tw-interactable tw-interactable--default tw-interactable--hover-enabled"
-                        href="/${channel_info.user.login}/videos/all">
-                        <div class="tw-align-center tw-pd-05">
-                            <p class="tw-c-text-base">최근 동영상 모두 보기</p>
                         </div>
-                    </a></div>
+                      </div>
+                    </div>
+                  </a>
+                <% } %>
+                <a class="tbs-link tw-block tw-full-width tw-interactable tw-interactable--default tw-interactable--hover-enabled"
+                  href="/<%- channel_info.user.login %>/videos/all">
+                  <div class="tw-align-center tw-pd-05">
+                    <p class="tw-c-text-base">최근 동영상 모두 보기</p>
                   </div>
+                </a>
               </div>
+            <% } %>
           </div>
-      </div>`;
-      return html;
-    }
+        </div>
+      </div>
+    `);
+    return templateTbsCardOverlay({
+      'channel_info': channel_info,
+      'is_live': channel_info.content.viewersCount !== undefined
+    });
   }
 
   /**
@@ -1014,101 +997,111 @@
    * @return {string} Generated HTML string
    */
   function generateTbsGroupSettingOverlayHtml(group) {
-    return `<div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
-      style="transition-delay: 0ms; transition-duration: 250ms;">
-      <div class="tw-pd-l-1">
-          <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block"
-              role="dialog">
-              <div class="tbs-group-setting tw-pd-x-05 tw-pd-y-05" data-tbs-group-name="${group['group_name']}">
-                <div class="tw-pd-1">
-                  <div class="tw-flex-grow-1 tw-font-size-6 tw-form-group tw-relative">
-                    <div>
-                      <div class="tw-mg-b-05">
-                        <label class="tw-form-label">그룹 제목</label>
-                      </div>
-                      <input type="text"
-                        class="tbs-group-setting-group-name tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
-                        autocapitalize="off" autocorrect="off" autocomplete="off"
-                        spellcheck="false" value="${group['group_name']}"${group['group_name'] === UNKNOWN_GROUP_NAME ? ' disabled': ''}>
+    const templateTbsGroupSettingOverlay = _.template(/*html*/`
+      <div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
+        style="transition-delay: 0ms; transition-duration: 250ms;">
+        <div class="tw-pd-l-1">
+          <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block" role="dialog">
+            <div class="tbs-group-setting tw-pd-x-05 tw-pd-y-05" data-tbs-group-name="<%- group['group_name'] %>">
+              <div class="tw-pd-1">
+                <div class="tw-flex-grow-1 tw-font-size-6 tw-form-group tw-relative">
+                  <div>
+                    <div class="tw-mg-b-05">
+                      <label class="tw-form-label">그룹 제목</label>
                     </div>
-                    <div>
-                      <div class="tw-mg-b-05 tw-mg-t-1">
-                        <label class="tw-form-label">색상</label>
-                      </div>
-                      <input type="text"
-                        class="tbs-group-setting-color tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
-                        autocapitalize="off" autocorrect="off" autocomplete="off"
-                        spellcheck="false" value="${group['color']}">
-                    </div>
-                    <div>
-                      <div class="tw-mg-b-05 tw-mg-t-1">
-                        <label class="tw-form-label">오프라인 채널 표시 여부</label>
-                      </div>
-                      <select
-                        class="tbs-group-setting-hide-offline tw-block tw-border-radius-medium tw-font-size-6 tw-full-width tw-pd-l-1 tw-pd-r-3 tw-pd-y-05 tw-select">
-                        <option value="false"${group['hide_offline'] ? '' : 'selected="selected"'}>표시함</option>
-                        <option value="true"${group['hide_offline'] ? 'selected="selected"': ''}>표시하지 않음</option>
-                      </select>
-                    </div>
+                    <input type="text"
+                      class="tbs-group-setting-group-name tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
+                      autocapitalize="off" autocorrect="off" autocomplete="off"
+                      spellcheck="false" value="<%- group['group_name'] %>"<% if (is_unknown_group) { %> disabled="disabled"<% } %>>
                   </div>
-                  <div class="tw-mg-t-1 tw-align-items-center tw-flex tw-flex-grow-1 tw-flex-shrink-1 tw-full-width tw-justify-content-between">`
-                  + (group['group_name'] !== UNKNOWN_GROUP_NAME ? `<button aria-label="삭제"
-                      class="tbs-group-setting-delete-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
-                          class="tw-button-icon__icon">
-                          <div style="width: 2rem; height: 2rem;">
-                              <div class="tw-icon">
-                                  <div class="tw-aspect">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#e91916" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                      <line x1="4" y1="7" x2="20" y2="7" />
-                                      <line x1="10" y1="11" x2="10" y2="17" />
-                                      <line x1="14" y1="11" x2="14" y2="17" />
-                                      <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
-                                      <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-                                    </svg>
-                                  </div>
-                              </div>
-                          </div>
-                      </span></button>`: `<div></div>`) + `<div>
-                      <button aria-label="취소"
-                        class="tbs-group-setting-cancel-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
-                            class="tw-button-icon__icon">
-                            <div style="width: 2rem; height: 2rem;">
-                                <div class="tw-icon">
-                                    <div class="tw-aspect">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <line x1="18" y1="6" x2="6" y2="18" />
-                                        <line x1="6" y1="6" x2="18" y2="18" />
-                                      </svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </span></button>
-                      <button aria-label="저장"
-                        class="tbs-group-setting-save-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
-                            class="tw-button-icon__icon">
-                            <div style="width: 2rem; height: 2rem;">
-                                <div class="tw-icon">
-                                    <div class="tw-aspect">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                        <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" />
-                                        <circle cx="12" cy="14" r="2" />
-                                        <polyline points="14 4 14 8 8 8 8 4" />
-                                      </svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </span></button>
+                  <div>
+                    <div class="tw-mg-b-05 tw-mg-t-1">
+                      <label class="tw-form-label">색상</label>
                     </div>
+                    <input type="text"
+                      class="tbs-group-setting-color tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
+                      autocapitalize="off" autocorrect="off" autocomplete="off"
+                      spellcheck="false" value="<%- group['color'] %>">
                   </div>
-                  <div class="tbs-group-settings-error tw-mg-t-1"></div>
+                  <div>
+                    <div class="tw-mg-b-05 tw-mg-t-1">
+                      <label class="tw-form-label">오프라인 채널 표시 여부</label>
+                    </div>
+                    <select
+                      class="tbs-group-setting-hide-offline tw-block tw-border-radius-medium tw-font-size-6 tw-full-width tw-pd-l-1 tw-pd-r-3 tw-pd-y-05 tw-select">
+                      <option value="false"<% if (!group['hide_offline']) { %>selected="selected"<% } %>>표시함</option>
+                      <option value="true"<% if (group['hide_offline']) { %>selected="selected"<% } %>>표시하지 않음</option>
+                    </select>
+                  </div>
                 </div>
+                <div class="tw-mg-t-1 tw-align-items-center tw-flex tw-flex-grow-1 tw-flex-shrink-1 tw-full-width tw-justify-content-between">
+                  <% if (!is_unknown_group) { %>
+                    <button aria-label="삭제"
+                    class="tbs-group-setting-delete-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                      class="tw-button-icon__icon">
+                      <div style="width: 2rem; height: 2rem;">
+                        <div class="tw-icon">
+                          <div class="tw-aspect">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#e91916" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                              <line x1="4" y1="7" x2="20" y2="7" />
+                              <line x1="10" y1="11" x2="10" y2="17" />
+                              <line x1="14" y1="11" x2="14" y2="17" />
+                              <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                              <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </span></button>
+                  <% } else { %>
+                    <div></div>
+                  <% } %>
+                  <div>
+                    <button aria-label="취소"
+                      class="tbs-group-setting-cancel-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                        class="tw-button-icon__icon">
+                        <div style="width: 2rem; height: 2rem;">
+                          <div class="tw-icon">
+                            <div class="tw-aspect">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </span></button>
+                    <button aria-label="저장"
+                      class="tbs-group-setting-save-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                        class="tw-button-icon__icon">
+                        <div style="width: 2rem; height: 2rem;">
+                          <div class="tw-icon">
+                            <div class="tw-aspect">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" />
+                                <circle cx="12" cy="14" r="2" />
+                                <polyline points="14 4 14 8 8 8 8 4" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </span></button>
+                  </div>
+                </div>
+              <div class="tbs-group-settings-error tw-mg-t-1"></div>
               </div>
             </div>
+          </div>
         </div>
-    </div>`;
+      </div>
+    `);
+    return templateTbsGroupSettingOverlay({
+      'group': group,
+      'is_unknown_group': group['group_name'] === UNKNOWN_GROUP_NAME
+    });
   }
 
   /**
