@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.1.6
+// @version     0.1.7
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
 // @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
@@ -617,15 +617,19 @@
                 <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
                   <figure aria-label="<%- group['group_name'] %>" class="tw-avatar tw-avatar--size-30">
                     <% if (group['is_opened']) { %>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="<%- group['group_name'] %>" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-image tw-image-avatar" alt="<%- group['group_name'] %>" width="30" height="30" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" />
                         <path d="M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" />
                       </svg>
                     <% } else { %>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-border-radius-rounded tw-image tw-image-avatar" alt="<%- group['group_name'] %>" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-image tw-image-avatar" alt="<%- group['group_name'] %>" width="30" height="30" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
+                        <% if (is_someone_live) { %>
+                          <line x1="16" y1="11" x2="16" y2="14" />
+                          <line x1="12" y1="11" x2="12" y2="14" />
+                        <% } %>
                       </svg>
                     <% } %>
                   </figure>
@@ -672,6 +676,7 @@
       'group': group,
       'group_item_html': group_item_html,
       'total_live_string': total_live_string,
+      'is_someone_live': is_someone_live,
       'channel_infos': channel_infos,
       'display_names_string': display_names_string
     });
