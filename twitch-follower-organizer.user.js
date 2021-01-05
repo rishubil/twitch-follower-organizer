@@ -1256,6 +1256,16 @@
           }
           const link = findEventTargetbyClassName(e, 'tbs-link');
           if (link !== null) {
+            if (
+              e.getModifierState('Alt') ||
+              e.getModifierState('AltGraph') ||
+              e.getModifierState('Control') ||
+              e.getModifierState('Meta') ||
+              e.getModifierState('OS') ||
+              e.getModifierState('Shift')
+            ) {
+              return false;
+            }
             const href = link.getAttribute('href');
             reactHistory.push(href);
             e.preventDefault();
