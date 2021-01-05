@@ -1156,6 +1156,22 @@
     return null;
   }
 
+  function scrollOnDrag(element, scrollDiff) {
+    if (scrollDiff < 0) {
+      element.scrollTop = Math.max(0, element.scrollTop + scrollDiff);
+    } else {
+      element.scrollTop = Math.min(
+        element.scrollHeight - element.clientHeight,
+        element.scrollTop + scrollDiff
+      );
+    }
+  }
+
+  /**
+   * @type {function} `scrollOnDrag`, but debounced
+   */
+  const debouncedScrollOnDrag = _.debounce(scrollOnDrag, 5);
+
   /**
    * Register global event listeners
    */
@@ -1278,6 +1294,9 @@
     document.addEventListener(
       'mouseover',
       function (e) {
+        if (dragged_card != null) {
+          return;
+        }
         if (e.target) {
           const card = findEventTargetbyClassName(e, 'side-nav-card__link');
           if (card !== null) {
@@ -1338,6 +1357,8 @@
         if (e.target) {
           const card = findEventTargetbyClassName(e, 'side-nav-card__link');
           if (card !== null) {
+            shouldShowCardOverlay = false;
+            debouncedClearCardOverlay();
             dragged_card = card;
           }
         }
@@ -1349,6 +1370,27 @@
       function (e) {
         // prevent default to allow drop
         e.preventDefault();
+      },
+      false
+    );
+    document.addEventListener(
+      'drag',
+      function (e) {
+        if (dragged_card == null) {
+          return;
+        }
+        const scrolling_height = 30;
+        const scroll_speed = 5;
+        const scroll_content_el = document.getElementsByClassName(
+          'simplebar-scroll-content'
+        )[0];
+        const scroll_content_rect = scroll_content_el.getBoundingClientRect();
+        if (e.clientY - scroll_content_rect.top < scrolling_height) {
+          debouncedScrollOnDrag(scroll_content_el, -scroll_speed);
+        }
+        if (scroll_content_rect.bottom - e.clientY < scrolling_height) {
+          debouncedScrollOnDrag(scroll_content_el, scroll_speed);
+        }
       },
       false
     );
