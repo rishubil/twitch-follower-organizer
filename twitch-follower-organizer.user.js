@@ -390,9 +390,6 @@
         display: inline-block;
         position: relative;
       }
-      .tw-channel-status-indicator.tbs-offline {
-        background-color: #717171;
-      }
       .tw-aspect {
         position: relative;
         width: 100%;
@@ -420,10 +417,8 @@
         display: block;
       }
       .tbs-group-item {
-        background: #18181b;
-      }
-      .tbs-group-item {
-        border-left: 0.2rem solid #6441a4;
+        background: var(--color-background-base);
+        border-left: 0.2rem solid var(--color-background-accent);
       }
       .twitch-better-sidebar-overlay {
         position: fixed;
@@ -446,6 +441,12 @@
       }
       .tbs-group-settings-error {
         display: none;
+      }
+      .tbs-button-svg {
+        stroke: var(--color-fill-button-icon);
+      }
+      .tbs-group-setting-delete-button .tbs-button-svg {
+        stroke: var(--color-text-alert);
       }
     `);
   }
@@ -574,7 +575,7 @@
                 <div style="width: 2rem; height: 2rem;">
                     <div class="tw-icon">
                         <div class="tw-aspect">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
                             <line x1="12" y1="10" x2="12" y2="16" />
@@ -682,7 +683,7 @@
                             <div style="width: 2rem; height: 2rem;">
                                 <div class="tw-icon">
                                     <div class="tw-aspect">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#dedee3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                      <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                         <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
                                         <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
@@ -1077,7 +1078,7 @@
                       <div style="width: 2rem; height: 2rem;">
                         <div class="tw-icon">
                           <div class="tw-aspect">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#e91916" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                               <line x1="4" y1="7" x2="20" y2="7" />
                               <line x1="10" y1="11" x2="10" y2="17" />
@@ -1099,7 +1100,7 @@
                         <div style="width: 2rem; height: 2rem;">
                           <div class="tw-icon">
                             <div class="tw-aspect">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <line x1="18" y1="6" x2="6" y2="18" />
                                 <line x1="6" y1="6" x2="18" y2="18" />
@@ -1114,7 +1115,7 @@
                         <div style="width: 2rem; height: 2rem;">
                           <div class="tw-icon">
                             <div class="tw-aspect">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" stroke="#efeff1" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" />
                                 <circle cx="12" cy="14" r="2" />
