@@ -16,7 +16,8 @@
 // @grant       GM_getValue
 // ==/UserScript==
 
-// Icons from Tabler Icons (https://tablericons.com/)
+// Define global objects for eslint
+/* globals GM_addStyle, GM_setValue, GM_getValue, _ */
 
 (function () {
   'use strict';
@@ -73,13 +74,15 @@
    * Load groups from GM storage
    */
   function loadGroups() {
-    const default_groups = [{
-      'group_name': UNKNOWN_GROUP_NAME,
-      'is_opened': false,
-      'hide_offline': true,
-      'color': '#a970ff',
-      'channels': null
-    }];
+    const default_groups = [
+      {
+        group_name: UNKNOWN_GROUP_NAME,
+        is_opened: false,
+        hide_offline: true,
+        color: '#a970ff',
+        channels: null,
+      },
+    ];
     groups = GM_getValue('groups', default_groups);
   }
 
@@ -91,14 +94,13 @@
     // console.log({groups});
   }
 
-
   /**
    * Find group index from groups by group name
    * @param {string} group_name The name of group
    * @return {number} the index of the found group, else -1
    */
   function findGroupIndexByName(group_name) {
-    return _.findIndex(groups, { 'group_name': group_name });
+    return _.findIndex(groups, {group_name: group_name});
   }
 
   /**
@@ -112,20 +114,20 @@
       throw new Error('ALREADY_EXIST');
     }
     groups.splice(groups.length, 0, {
-      'group_name': group_name,
-      'is_opened': false,
-      'hide_offline': true,
-      'color': '#a970ff',
-      'channels': []
+      group_name: group_name,
+      is_opened: false,
+      hide_offline: true,
+      color: '#a970ff',
+      channels: [],
     });
     saveGroups();
   }
 
   /**
    * Remove group from groups with name and save
-   * 
+   *
    * If there is no group named `group_name`, do nothing.
-   * 
+   *
    * @param {string} group_name The name of group
    */
   function removeGroup(group_name) {
@@ -137,34 +139,31 @@
     saveGroups();
   }
 
-
   /**
    * Move channel between speific groups using index and channel name
    * @param {number} source_group_index Source group index
    * @param {number} target_group_index Target group index
    * @param {string} channel_name Channel name to move
    */
-  function moveChannelBetweenGroups(source_group_index, target_group_index, channel_name) {
+  function moveChannelBetweenGroups(
+    source_group_index,
+    target_group_index,
+    channel_name
+  ) {
     if (source_group_index === target_group_index) {
       return;
     }
     const unknown_group_index = findGroupIndexByName(UNKNOWN_GROUP_NAME);
-    if (source_group_index  !== unknown_group_index) {
-      _.pull(
-        groups[source_group_index]['channels'],
-        channel_name
-      );
+    if (source_group_index !== unknown_group_index) {
+      _.pull(groups[source_group_index]['channels'], channel_name);
     }
-    if (target_group_index  !== unknown_group_index) {
-      _.pull(
-        groups[target_group_index]['channels'],
-        channel_name
-      )
+    if (target_group_index !== unknown_group_index) {
+      _.pull(groups[target_group_index]['channels'], channel_name);
       groups[target_group_index]['channels'].push(channel_name);
     }
     saveGroups();
   }
-  
+
   /**
    * Move group position by inserting source group into target group index
    * @param {*} source_group_index Source group index
@@ -182,9 +181,9 @@
 
   /**
    * Find group from groups by name and return it
-   * 
+   *
    * If there is no group named `group_name`, return null.
-   * 
+   *
    * @param {string} group_name The name of group
    * @return {?Group} founded group, else null
    */
@@ -198,10 +197,10 @@
 
   /**
    * Find ChannelInfo from `grouped_channel_infos` by name and return it
-   * 
+   *
    * If there is no group named `group_name`, return null.
    * If there is channel named `channel_name`, return null.
-   * 
+   *
    * @param {string} group_name The name of group
    * @param {string} channel_name The name of channel
    * @return {?ChannelInfo} founded ChannelInfo, else null
@@ -222,10 +221,10 @@
 
   /**
    * Update `is_opened` of group by group name
-   * 
+   *
    * This function will save the new groups and render UI.
    * If there is no group named `group_name`, do nothing.
-   * 
+   *
    * @param {string} group_name The name of group
    * @param {boolean} is_opened `is_opened` value to set
    */
@@ -241,10 +240,10 @@
 
   /**
    * Update `hide_offline` of group by group name
-   * 
+   *
    * This function will save the new groups and render UI.
    * If there is no group named `group_name`, do nothing.
-   * 
+   *
    * @param {string} group_name The name of group
    * @param {boolean} hide_offline `hide_offline` value to set
    */
@@ -260,10 +259,10 @@
 
   /**
    * Update `color` of group by group name
-   * 
+   *
    * This function will save the new groups and render UI.
    * If there is no group named `group_name`, do nothing.
-   * 
+   *
    * @param {string} group_name The name of group
    * @param {string} color `color` value to set
    */
@@ -279,10 +278,10 @@
 
   /**
    * Change group name
-   * 
+   *
    * This function will save the new groups and render UI.
    * If there is no group named `old_name`, do nothing.
-   * 
+   *
    * @param {string} old_name The name of target group to change name
    * @param {string} new_name The new name of group
    * @throws If there is the group named `new_name`
@@ -305,10 +304,10 @@
 
   /**
    * Update `channels` of group by group name
-   * 
+   *
    * This function will save the new groups and render UI.
    * If there is no group named `group_name`, do nothing.
-   * 
+   *
    * @param {string} group_name The name of group
    * @param {string[]} channels `channels` value to set
    */
@@ -324,10 +323,10 @@
 
   /**
    * Find group from groups that contains specific channel
-   * 
+   *
    * If there is no group contains the channel,
    * return UNKNOWN group instead.
-   * 
+   *
    * @param {string} channel The name of channel
    * @return {Group} the found group
    */
@@ -347,9 +346,9 @@
 
   /**
    * Get single cookie value by name
-   * 
+   *
    * If there is no cookie named `cookie_name`, return empty string.
-   * 
+   *
    * @param {string} cookie_name The name of cookie
    * @return {string} Cookie value
    */
@@ -375,14 +374,14 @@
    */
   function isAuthed() {
     const token = getCookie('auth-token');
-    return token !== ''
+    return token !== '';
   }
 
   /**
    * Inject CSS styles
    */
   function injectStyle() {
-    GM_addStyle(/*css*/`
+    GM_addStyle(/*css*/ `
       .tw-channel-status-indicator {
         background-color: var(--color-fill-live);
         border-radius: var(--border-radius-rounded);
@@ -447,7 +446,7 @@
 
   /**
    * Request Twitch GraphQL API to get {@link ChannelInfo}
-   * 
+   *
    * It will call {@link processFollowedSectionData} to process retrived data.
    */
   function requestFollowedSectionData() {
@@ -459,26 +458,26 @@
 
     console.log('[TBS] requesting FollowedSectionData...');
     fetch('https://gql.twitch.tv/gql', {
-      'method': 'POST',
-      'headers': {
-        'connection': 'keep-alive',
-        'authorization': 'OAuth ' + token,
-        'dnt': '1',
+      method: 'POST',
+      headers: {
+        connection: 'keep-alive',
+        authorization: 'OAuth ' + token,
+        dnt: '1',
         'accept-language': 'ko-KR',
         'client-id': CLIENT_ID,
         'x-device-id': unique_id,
         'content-type': 'text/plain;charset=UTF-8',
-        'accept': '*/*',
-        'origin': 'https://www.twitch.tv',
+        accept: '*/*',
+        origin: 'https://www.twitch.tv',
         'sec-fetch-site': 'same-site',
         'sec-fetch-mode': 'cors',
         'sec-fetch-dest': 'empty',
-        'referer': 'https://www.twitch.tv/'
+        referer: 'https://www.twitch.tv/',
       },
-      'body': `[{"operationName":"PersonalSections","variables":{"input":{"sectionInputs":["FOLLOWED_SECTION","RECOMMENDED_SECTION"],"recommendationContext":{"platform":"web"}},"channelLogin":null,"withChannelUser":false},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"469efc9442aa2b7634a3ab36eae1778b78ec7ccf062d2b17833afb0e66b78a25"}}}]`
+      body: `[{"operationName":"PersonalSections","variables":{"input":{"sectionInputs":["FOLLOWED_SECTION","RECOMMENDED_SECTION"],"recommendationContext":{"platform":"web"}},"channelLogin":null,"withChannelUser":false},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"469efc9442aa2b7634a3ab36eae1778b78ec7ccf062d2b17833afb0e66b78a25"}}}]`,
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         followedSectionData = data;
         processFollowedSectionData();
         setTimeout(debouncedRequestFollowedSectionData, 1000 * 60 * 5);
@@ -488,11 +487,14 @@
   /**
    * @type {function} `requestFollowedSectionData`, but debounced
    */
-  const debouncedRequestFollowedSectionData = _.debounce(requestFollowedSectionData, 200);
+  const debouncedRequestFollowedSectionData = _.debounce(
+    requestFollowedSectionData,
+    200
+  );
 
   /**
    * Convert raw data into `grouped_channel_infos`
-   * 
+   *
    * It will call {@link renderFollowedSection}.
    */
   function processFollowedSectionData() {
@@ -522,13 +524,17 @@
    * Render UI from data
    */
   function renderFollowedSection() {
-    const transitionGroupEl = document.querySelector('.side-nav-section:first-child .tw-transition-group');
+    const transitionGroupEl = document.querySelector(
+      '.side-nav-section:first-child .tw-transition-group'
+    );
     if (transitionGroupEl === null) {
       console.log('[TBS] transitionGroup is not loaded');
       return;
     }
 
-    let tbsEl = transitionGroupEl.getElementsByClassName('twitch-better-sidebar');
+    let tbsEl = transitionGroupEl.getElementsByClassName(
+      'twitch-better-sidebar'
+    );
     if (tbsEl.length === 0) {
       tbsEl = document.createElement('div');
       tbsEl.classList.add('twitch-better-sidebar');
@@ -545,14 +551,18 @@
     }
     tbsEl.innerHTML = tbsHtml;
 
-    const sideNavHeaderTextEl = document.querySelector('.side-nav-section:first-child .side-nav-header h5');
+    const sideNavHeaderTextEl = document.querySelector(
+      '.side-nav-section:first-child .side-nav-header h5'
+    );
     if (sideNavHeaderTextEl !== null) {
-      let addGroupButtonEl = sideNavHeaderTextEl.getElementsByClassName('tbs-add-group-button');
+      let addGroupButtonEl = sideNavHeaderTextEl.getElementsByClassName(
+        'tbs-add-group-button'
+      );
       if (addGroupButtonEl.length === 0) {
         addGroupButtonEl = document.createElement('button');
         sideNavHeaderTextEl.appendChild(addGroupButtonEl);
 
-        const templateAddGroupButton = _.template(/*html*/`
+        const templateAddGroupButton = _.template(/*html*/ `
           <button aria-label="그룹 추가"
             class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative tw-mg-l-1"><span
                 class="tw-button-icon__icon">
@@ -583,9 +593,12 @@
    */
   function generateTbsGroupHtml(group_index, channel_infos) {
     const group = groups[group_index];
-    const display_names_string = _.join(_.map(channel_infos, function (channel_info) {
-      return channel_info.user.displayName
-    }), ', ');
+    const display_names_string = _.join(
+      _.map(channel_infos, function (channel_info) {
+        return channel_info.user.displayName;
+      }),
+      ', '
+    );
     const is_someone_live = _.some(channel_infos, function (channel_info) {
       return channel_info.content.viewersCount !== undefined;
     });
@@ -597,16 +610,26 @@
     }).toLocaleString();
     let group_item_html = '';
     if (group['is_opened']) {
-      for (let channel_info_index = 0; channel_info_index < channel_infos.length; channel_info_index++) {
+      for (
+        let channel_info_index = 0;
+        channel_info_index < channel_infos.length;
+        channel_info_index++
+      ) {
         const channel_info = channel_infos[channel_info_index];
         // render live channels, and if hide_offline is false, render offline channels too.
-        if (channel_info.content.viewersCount !== undefined || !group['hide_offline']) {
-          group_item_html += generateTbsGroupItemHtml(group_index, channel_info);
+        if (
+          channel_info.content.viewersCount !== undefined ||
+          !group['hide_offline']
+        ) {
+          group_item_html += generateTbsGroupItemHtml(
+            group_index,
+            channel_info
+          );
         }
       }
     }
-    
-    const templateTbsGroup = _.template(/*html*/`
+
+    const templateTbsGroup = _.template(/*html*/ `
       <div class="tbs-group">
         <div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
           style="transition: transform 250ms ease 0ms, opacity;">
@@ -672,13 +695,13 @@
       </div>
     `);
     return templateTbsGroup({
-      'group_index': group_index,
-      'group': group,
-      'group_item_html': group_item_html,
-      'total_live_string': total_live_string,
-      'is_someone_live': is_someone_live,
-      'channel_infos': channel_infos,
-      'display_names_string': display_names_string
+      group_index: group_index,
+      group: group,
+      group_item_html: group_item_html,
+      total_live_string: total_live_string,
+      is_someone_live: is_someone_live,
+      channel_infos: channel_infos,
+      display_names_string: display_names_string,
     });
   }
 
@@ -689,7 +712,7 @@
    * @return {string} Generated HTML string
    */
   function generateTbsGroupItemHtml(group_index, channel_info) {
-    const templateTbsGroupItem = _.template(/*html*/`
+    const templateTbsGroupItem = _.template(/*html*/ `
       <div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
         style="transition: transform 250ms ease 0ms, opacity;">
         <div>
@@ -742,9 +765,9 @@
       </div>
     `);
     return templateTbsGroupItem({
-      'group_index': group_index,
-      'channel_info': channel_info,
-      'is_live': channel_info.content.viewersCount !== undefined
+      group_index: group_index,
+      channel_info: channel_info,
+      is_live: channel_info.content.viewersCount !== undefined,
     });
   }
 
@@ -753,7 +776,9 @@
    * @return {Element} Overlay element
    */
   function getOverlay() {
-    let tbsoEl = document.getElementsByClassName('twitch-better-sidebar-overlay');
+    let tbsoEl = document.getElementsByClassName(
+      'twitch-better-sidebar-overlay'
+    );
     if (tbsoEl.length === 0) {
       tbsoEl = document.createElement('div');
       tbsoEl.classList.add('twitch-better-sidebar-overlay');
@@ -783,7 +808,9 @@
     const tbsoEl = getOverlay();
     const cardOverlay = tbsoEl.getElementsByClassName('tbs-card-overlay');
     if (cardOverlay.length !== 0) {
-      _.forEach(cardOverlay, function(o) {o.remove();});
+      _.forEach(cardOverlay, function (o) {
+        o.remove();
+      });
     }
   }
 
@@ -823,7 +850,7 @@
    * @return {string} Generated HTML string
    */
   function generateTbsCardOverlayHtml(channel_info) {
-    const templateTbsCardOverlay = _.template(/*html*/`
+    const templateTbsCardOverlay = _.template(/*html*/ `
       <div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
         style="transition-delay: 0ms; transition-duration: 250ms;">
         <div class="tw-pd-l-1">
@@ -873,8 +900,8 @@
       </div>
     `);
     return templateTbsCardOverlay({
-      'channel_info': channel_info,
-      'is_live': channel_info.content.viewersCount !== undefined
+      channel_info: channel_info,
+      is_live: channel_info.content.viewersCount !== undefined,
     });
   }
 
@@ -883,17 +910,21 @@
    */
   function clearGroupSettingOverlay() {
     const tbsoEl = getOverlay();
-    const groupSettingOverlay = tbsoEl.getElementsByClassName('tbs-group-setting-overlay');
+    const groupSettingOverlay = tbsoEl.getElementsByClassName(
+      'tbs-group-setting-overlay'
+    );
     if (groupSettingOverlay.length !== 0) {
-      _.forEach(groupSettingOverlay, function(o) {o.remove();});
+      _.forEach(groupSettingOverlay, function (o) {
+        o.remove();
+      });
     }
   }
 
   /**
    * Save group from setting overlay
-   * 
+   *
    * If there is no group setting overlay, do nothing.
-   * 
+   *
    * @return {?string} Return null if save successfully, else error text.
    */
   function saveGroupFromSettingOverlay() {
@@ -906,20 +937,31 @@
     const target_group_name = groupSettingEl.dataset.tbsGroupName;
     const group = getGroupByName(target_group_name);
 
-    const group_name = groupSettingEl.getElementsByClassName('tbs-group-setting-group-name')[0].value;
-    const color = groupSettingEl.getElementsByClassName('tbs-group-setting-color')[0].value;
-    const hide_offline = groupSettingEl.getElementsByClassName('tbs-group-setting-hide-offline')[0].value === 'true';
-    
-    if (group['group_name'] === UNKNOWN_GROUP_NAME && group['group_name'] !== group_name) {
+    const group_name = groupSettingEl.getElementsByClassName(
+      'tbs-group-setting-group-name'
+    )[0].value;
+    const color = groupSettingEl.getElementsByClassName(
+      'tbs-group-setting-color'
+    )[0].value;
+    const hide_offline =
+      groupSettingEl.getElementsByClassName('tbs-group-setting-hide-offline')[0]
+        .value === 'true';
+
+    if (
+      group['group_name'] === UNKNOWN_GROUP_NAME &&
+      group['group_name'] !== group_name
+    ) {
       // UNKNOWN group cannot be changed name
-      return "이름을 변경할 수 없는 그룹입니다.";
+      return '이름을 변경할 수 없는 그룹입니다.';
     }
 
-    if (group['group_name'] !== group_name && (
-      findGroupIndexByName(group_name) !== -1 || group_name === UNKNOWN_GROUP_NAME
-    )) {
+    if (
+      group['group_name'] !== group_name &&
+      (findGroupIndexByName(group_name) !== -1 ||
+        group_name === UNKNOWN_GROUP_NAME)
+    ) {
       // group_name is already taken
-      return "이미 존재하는 그룹 제목입니다.";
+      return '이미 존재하는 그룹 제목입니다.';
     }
 
     group['group_name'] = group_name;
@@ -933,9 +975,9 @@
 
   /**
    * Delete group from setting overlay
-   * 
+   *
    * If there is no group setting overlay, do nothing.
-   * 
+   *
    * @return {?string} Return null if delete successfully, else error text.
    */
   function deleteGroupFromSettingOverlay() {
@@ -949,7 +991,7 @@
 
     if (target_group_name === UNKNOWN_GROUP_NAME) {
       // UNKNOWN group cannot be deleted
-      return "삭제할 수 없는 그룹입니다.";
+      return '삭제할 수 없는 그룹입니다.';
     }
 
     removeGroup(target_group_name);
@@ -985,7 +1027,7 @@
    * @return {string} Generated HTML string
    */
   function generateTbsGroupSettingOverlayHtml(group) {
-    const templateTbsGroupSettingOverlay = _.template(/*html*/`
+    const templateTbsGroupSettingOverlay = _.template(/*html*/ `
       <div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
         style="transition-delay: 0ms; transition-duration: 250ms;">
         <div class="tw-pd-l-1">
@@ -1087,8 +1129,8 @@
       </div>
     `);
     return templateTbsGroupSettingOverlay({
-      'group': group,
-      'is_unknown_group': group['group_name'] === UNKNOWN_GROUP_NAME
+      group: group,
+      is_unknown_group: group['group_name'] === UNKNOWN_GROUP_NAME,
     });
   }
 
@@ -1098,7 +1140,11 @@
    * @param {string} class_name class name to find
    * @param {number} max_bubble_count maximum recursive depth, default is 10
    */
-  function findEventTargetbyClassName(event, class_name, max_bubble_count = 20) {
+  function findEventTargetbyClassName(
+    event,
+    class_name,
+    max_bubble_count = 20
+  ) {
     let current_target = event.target;
     let bubble_count = 0;
     while (bubble_count < max_bubble_count && current_target !== null) {
@@ -1115,179 +1161,234 @@
    * Register global event listeners
    */
   function registerEventListeners() {
-    document.addEventListener('click', function (e) {
-      if (e.target) {
-        const addGroupButton = findEventTargetbyClassName(e, 'tbs-add-group-button');
-        if (addGroupButton !== null) {
-          let groupNumber = 1;
-          while (true) {
-            try {
-              const group_name = `그룹 ${groupNumber}`;
-              addGroup(`그룹 ${groupNumber}`);
+    document.addEventListener(
+      'click',
+      function (e) {
+        if (e.target) {
+          const addGroupButton = findEventTargetbyClassName(
+            e,
+            'tbs-add-group-button'
+          );
+          if (addGroupButton !== null) {
+            let groupNumber = 1;
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+              try {
+                const group_name = `그룹 ${groupNumber}`;
+                addGroup(`그룹 ${groupNumber}`);
+                processFollowedSectionData();
+                const group = getGroupByName(group_name);
+                showGroupSettingOverlay(group);
+                e.preventDefault();
+                return;
+              } catch (err) {
+                if (err.message !== 'ALREADY_EXIST') {
+                  console.log(err);
+                  break;
+                }
+                groupNumber++;
+              }
+            }
+          }
+          const editButton = findEventTargetbyClassName(e, 'tbs-edit-button');
+          if (editButton !== null) {
+            const group_index = Number(editButton.dataset.tbsGroupIndex);
+            const group = groups[group_index];
+            showGroupSettingOverlay(group);
+            e.preventDefault();
+            return;
+          }
+          const groupSettingCancelButton = findEventTargetbyClassName(
+            e,
+            'tbs-group-setting-cancel-button'
+          );
+          if (groupSettingCancelButton !== null) {
+            clearGroupSettingOverlay();
+            e.preventDefault();
+            return;
+          }
+          const groupSettingSaveButton = findEventTargetbyClassName(
+            e,
+            'tbs-group-setting-save-button'
+          );
+          if (groupSettingSaveButton !== null) {
+            const saveResult = saveGroupFromSettingOverlay();
+            if (saveResult === null) {
+              clearGroupSettingOverlay();
               processFollowedSectionData();
-              const group = getGroupByName(group_name);
-              showGroupSettingOverlay(group);
+            } else {
+              const errorEl = document.getElementsByClassName(
+                'tbs-group-settings-error'
+              )[0];
+              errorEl.style.display = 'block';
+              errorEl.innerHTML = saveResult;
+            }
+            e.preventDefault();
+            return;
+          }
+          const groupSettingDeleteButton = findEventTargetbyClassName(
+            e,
+            'tbs-group-setting-delete-button'
+          );
+          if (groupSettingDeleteButton !== null) {
+            const deleteResult = deleteGroupFromSettingOverlay();
+            if (deleteResult === null) {
+              clearGroupSettingOverlay();
+              processFollowedSectionData();
+            } else {
+              const errorEl = document.getElementsByClassName(
+                'tbs-group-settings-error'
+              )[0];
+              errorEl.style.display = 'block';
+              errorEl.innerHTML = deleteResult;
+            }
+            e.preventDefault();
+            return;
+          }
+          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          if (card !== null) {
+            if (card.classList.contains('tbs-group-header')) {
+              const group_index = Number(card.dataset.tbsGroupIndex);
+              const group = groups[group_index];
+              setGroupOpened(group['group_name'], !group['is_opened']);
               e.preventDefault();
               return;
-            } catch (err) {
-              if (err.message !== 'ALREADY_EXIST') {
-                console.log(err);
-                break;
+            }
+          }
+          const link = findEventTargetbyClassName(e, 'tbs-link');
+          if (link !== null) {
+            const href = link.getAttribute('href');
+            reactHistory.push(href);
+            e.preventDefault();
+            return;
+          }
+        }
+      },
+      false
+    );
+    document.addEventListener(
+      'mouseover',
+      function (e) {
+        if (e.target) {
+          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          if (card !== null) {
+            if (card.classList.contains('tbs-group-item')) {
+              const group_index = Number(card.dataset.tbsGroupIndex);
+              const group = groups[group_index];
+              const channel_name = card.dataset.tbsChannel;
+              const channel_info = getChannelInfoByName(
+                group['group_name'],
+                channel_name
+              );
+              if (channel_info !== null) {
+                showChannelOverlay(card, channel_info);
               }
-              groupNumber++;
+              e.preventDefault();
+              return;
             }
           }
-        }
-        const editButton = findEventTargetbyClassName(e, 'tbs-edit-button');
-        if (editButton !== null) {
-          const group_index = Number(editButton.dataset.tbsGroupIndex);
-          const group = groups[group_index];
-          showGroupSettingOverlay(group);
-          e.preventDefault();
-          return;
-        }
-        const groupSettingCancelButton = findEventTargetbyClassName(e, 'tbs-group-setting-cancel-button');
-        if (groupSettingCancelButton !== null) {
-          clearGroupSettingOverlay();
-          e.preventDefault();
-          return;
-        }
-        const groupSettingSaveButton = findEventTargetbyClassName(e, 'tbs-group-setting-save-button');
-        if (groupSettingSaveButton !== null) {
-          const saveResult = saveGroupFromSettingOverlay();
-          if (saveResult === null) {
-            clearGroupSettingOverlay();
-            processFollowedSectionData();
-          } else {
-            const errorEl = document.getElementsByClassName('tbs-group-settings-error')[0];
-            errorEl.style.display = 'block';
-            errorEl.innerHTML = saveResult;
-          }
-          e.preventDefault();
-          return;
-        }
-        const groupSettingDeleteButton = findEventTargetbyClassName(e, 'tbs-group-setting-delete-button');
-        if (groupSettingDeleteButton !== null) {
-          const deleteResult = deleteGroupFromSettingOverlay();
-          if (deleteResult === null) {
-            clearGroupSettingOverlay();
-            processFollowedSectionData();
-          } else {
-            const errorEl = document.getElementsByClassName('tbs-group-settings-error')[0];
-            errorEl.style.display = 'block';
-            errorEl.innerHTML = deleteResult;
-          }
-          e.preventDefault();
-          return;
-        }
-        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
-        if (card !== null) {
-          if (card.classList.contains('tbs-group-header')) {
-            const group_index = Number(card.dataset.tbsGroupIndex);
-            const group = groups[group_index];
-            setGroupOpened(group['group_name'], !group['is_opened']);
-            e.preventDefault();
-            return;
-          }
-        }
-        const link = findEventTargetbyClassName(e, 'tbs-link');
-        if (link !== null) {
-          const href = link.getAttribute('href');
-          reactHistory.push(href);
-          e.preventDefault();
-          return;
-        }
-      }
-    }, false);
-    document.addEventListener('mouseover', function (e) {
-      if (e.target) {
-        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
-        if (card !== null) {
-          if (card.classList.contains('tbs-group-item')) {
-            const group_index = Number(card.dataset.tbsGroupIndex);
-            const group = groups[group_index];
-            const channel_name = card.dataset.tbsChannel;
-            const channel_info = getChannelInfoByName(group['group_name'], channel_name);
-            if (channel_info !== null) {
-              showChannelOverlay(card, channel_info);
-            }
-            e.preventDefault();
-            return;
-          }
-        }
 
-        const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
-        if (cardOverlay !== null) {
-          shouldShowCardOverlay = true;
-          e.preventDefault();
-          return;
+          const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
+          if (cardOverlay !== null) {
+            shouldShowCardOverlay = true;
+            e.preventDefault();
+            return;
+          }
         }
-      }
-    }, false);
-    document.addEventListener('mouseout', function (e) {
-      if (e.target) {
-        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
-        if (card !== null) {
-          if (card.classList.contains('tbs-group-item')) {
+      },
+      false
+    );
+    document.addEventListener(
+      'mouseout',
+      function (e) {
+        if (e.target) {
+          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          if (card !== null) {
+            if (card.classList.contains('tbs-group-item')) {
+              shouldShowCardOverlay = false;
+              debouncedClearCardOverlay();
+              e.preventDefault();
+              return;
+            }
+          }
+
+          const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
+          if (cardOverlay !== null) {
             shouldShowCardOverlay = false;
             debouncedClearCardOverlay();
             e.preventDefault();
             return;
           }
         }
-
-        const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
-        if (cardOverlay !== null) {
-          shouldShowCardOverlay = false;
-          debouncedClearCardOverlay();
-          e.preventDefault();
-          return;
-        }
-      }
-    }, false);
-    document.addEventListener('dragstart', function (e) {
-      if (e.target) {
-        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
-        if (card !== null) {
-          dragged_card = card;
-        }
-      }
-    }, false);
-    document.addEventListener("dragover", function(e) {
-      // prevent default to allow drop
-      e.preventDefault();
-    }, false);
-    document.addEventListener('drop', function (e) {
-      if (e.target) {
-        const card = findEventTargetbyClassName(e, 'side-nav-card__link');
-        if (card !== null && dragged_card !== null) {
-          const dragged_group_index = Number(dragged_card.dataset.tbsGroupIndex);
-          const group_index = Number(card.dataset.tbsGroupIndex);
-          if (dragged_card.classList.contains('tbs-group-header')) {
-            moveGroupPosition(dragged_group_index, group_index);
-          } else if (dragged_card.classList.contains('tbs-group-item')) {
-            const dragged_channel_name = dragged_card.dataset.tbsChannel;
-            moveChannelBetweenGroups(dragged_group_index, group_index, dragged_channel_name);
+      },
+      false
+    );
+    document.addEventListener(
+      'dragstart',
+      function (e) {
+        if (e.target) {
+          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          if (card !== null) {
+            dragged_card = card;
           }
-          processFollowedSectionData();
-          dragged_card = null;
-          e.preventDefault();
-          return;
         }
-      }
-      dragged_card = null;
-    }, false);
+      },
+      false
+    );
+    document.addEventListener(
+      'dragover',
+      function (e) {
+        // prevent default to allow drop
+        e.preventDefault();
+      },
+      false
+    );
+    document.addEventListener(
+      'drop',
+      function (e) {
+        if (e.target) {
+          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          if (card !== null && dragged_card !== null) {
+            const dragged_group_index = Number(
+              dragged_card.dataset.tbsGroupIndex
+            );
+            const group_index = Number(card.dataset.tbsGroupIndex);
+            if (dragged_card.classList.contains('tbs-group-header')) {
+              moveGroupPosition(dragged_group_index, group_index);
+            } else if (dragged_card.classList.contains('tbs-group-item')) {
+              const dragged_channel_name = dragged_card.dataset.tbsChannel;
+              moveChannelBetweenGroups(
+                dragged_group_index,
+                group_index,
+                dragged_channel_name
+              );
+            }
+            processFollowedSectionData();
+            dragged_card = null;
+            e.preventDefault();
+            return;
+          }
+        }
+        dragged_card = null;
+      },
+      false
+    );
   }
 
   /**
    * Get the first React state node from element
-   * @param {Element} el Target element 
+   * @param {Element} el Target element
    * @return {object} React state node
    */
   function getReactStateNode(el) {
-    const key = Object.keys(el).find(key => key.startsWith("__reactInternalInstance$"));
+    const key = Object.keys(el).find((key) =>
+      key.startsWith('__reactInternalInstance$')
+    );
     let reactObj = el[key];
-    while (reactObj.stateNode === null || reactObj.stateNode.refs === undefined) {
+    while (
+      reactObj.stateNode === null ||
+      reactObj.stateNode.refs === undefined
+    ) {
       reactObj = reactObj.return;
       if (reactObj === undefined) {
         return null;
@@ -1298,13 +1399,19 @@
 
   /**
    * Get the first React Router history from element
-   * @param {Element} el Target element 
+   * @param {Element} el Target element
    * @return {object} React Router history
    */
   function getReactRouterHistory(el) {
-    const key = Object.keys(el).find(key => key.startsWith("__reactInternalInstance$"));
+    const key = Object.keys(el).find((key) =>
+      key.startsWith('__reactInternalInstance$')
+    );
     let reactObj = el[key];
-    while (reactObj.stateNode === null || reactObj.stateNode.props === undefined || reactObj.stateNode.props.history === undefined) {
+    while (
+      reactObj.stateNode === null ||
+      reactObj.stateNode.props === undefined ||
+      reactObj.stateNode.props.history === undefined
+    ) {
       reactObj = reactObj.return;
       if (reactObj === undefined) {
         return null;
@@ -1318,16 +1425,28 @@
    */
   function checkFollowingUiUpdated() {
     try {
-      const followingEl = document.querySelector('.side-nav-section:first-child');
+      const followingEl = document.querySelector(
+        '.side-nav-section:first-child'
+      );
       const followingSn = getReactStateNode(followingEl);
-      const followingOriginalComponentDidUpdate = followingSn.componentDidUpdate;
-      followingSn.componentDidUpdate = function (prevProps, prevState, snapshot) {
-        console.log("[TBS] FOLLOWING REACT UPDATED");
+      const followingOriginalComponentDidUpdate =
+        followingSn.componentDidUpdate;
+      followingSn.componentDidUpdate = function (
+        prevProps,
+        prevState,
+        snapshot
+      ) {
+        console.log('[TBS] FOLLOWING REACT UPDATED');
         if (followingOriginalComponentDidUpdate !== undefined) {
-          followingOriginalComponentDidUpdate.call(this, prevProps, prevState, snapshot);
+          followingOriginalComponentDidUpdate.call(
+            this,
+            prevProps,
+            prevState,
+            snapshot
+          );
         }
         debouncedRequestFollowedSectionData();
-      }
+      };
     } catch (err) {
       setTimeout(checkFollowingUiUpdated, 500);
     }
@@ -1342,16 +1461,25 @@
       const semiRootSn = getReactStateNode(semiRootEl);
       reactHistory = getReactRouterHistory(semiRootEl);
       const semiRootOriginalComponentDidUpdate = semiRootSn.componentDidUpdate;
-      semiRootSn.componentDidUpdate = function (prevProps, prevState, snapshot) {
-        console.log("[TBS] ROOT UPDATED");
+      semiRootSn.componentDidUpdate = function (
+        prevProps,
+        prevState,
+        snapshot
+      ) {
+        console.log('[TBS] ROOT UPDATED');
         if (semiRootOriginalComponentDidUpdate !== undefined) {
-          semiRootOriginalComponentDidUpdate.call(this, prevProps, prevState, snapshot);
+          semiRootOriginalComponentDidUpdate.call(
+            this,
+            prevProps,
+            prevState,
+            snapshot
+          );
         }
         // It should be call once, so restore original function here
         semiRootSn.componentDidUpdate = semiRootOriginalComponentDidUpdate;
         debouncedRequestFollowedSectionData();
         checkFollowingUiUpdated();
-      }
+      };
       debouncedRequestFollowedSectionData();
     } catch (err) {
       setTimeout(checkRootUiUpdated, 500);
@@ -1368,7 +1496,11 @@
   injectStyle();
   registerEventListeners();
 
-  window.addEventListener('load', function () {
-    checkRootUiUpdated();
-  }, false);
+  window.addEventListener(
+    'load',
+    function () {
+      checkRootUiUpdated();
+    },
+    false
+  );
 })();

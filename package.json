@@ -1,0 +1,26 @@
+{
+  "name": "twitch-follower-organizer",
+  "version": "0.1.7",
+  "description": "\"We need better sidebar\" - by wonzy_world, 2021",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.17.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "2.2.1"
+  },
+  "scripts": {
+    "eslint": "eslint .",
+    "prettier": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rishubil/twitch-follower-organizer.git"
+  },
+  "author": "Nesswit",
+  "license": "BSL 1.1",
+  "bugs": {
+    "url": "https://github.com/rishubil/twitch-follower-organizer/issues"
+  },
+  "homepage": "https://github.com/rishubil/twitch-follower-organizer#readme"
+}
