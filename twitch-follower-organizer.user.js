@@ -407,6 +407,10 @@
       .side-nav-section:first-child .twitch-better-sidebar .tw-transition {
         display: block!important;
       }
+      .side-nav-header-text .tbs-add-group-button {
+        position: absolute!important;
+        top: 0;
+      }
       .tbs-group-header .side-nav-card__live-status {
         display: none;
       }
@@ -563,7 +567,7 @@
 
         const templateAddGroupButton = _.template(/*html*/ `
           <button aria-label="그룹 추가"
-            class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative tw-mg-l-1"><span
+            class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative tw-mg-l-1 tw-mg-t-1"><span
                 class="tw-button-icon__icon">
                 <div style="width: 2rem; height: 2rem;">
                     <div class="tw-icon">
