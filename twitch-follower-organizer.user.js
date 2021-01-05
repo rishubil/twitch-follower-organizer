@@ -68,7 +68,7 @@
   /**
    * @type {Element} Dragged card element
    */
-  let dragged_card = false;
+  let dragged_card = null;
 
   /**
    * Load groups from GM storage
@@ -1294,7 +1294,7 @@
     document.addEventListener(
       'mouseover',
       function (e) {
-        if (dragged_card != null) {
+        if (dragged_card !== null) {
           return;
         }
         if (e.target) {
@@ -1366,6 +1366,13 @@
       false
     );
     document.addEventListener(
+      'dragend',
+      function (e) {
+        dragged_card = null;
+      },
+      false
+    );
+    document.addEventListener(
       'dragover',
       function (e) {
         // prevent default to allow drop
@@ -1376,7 +1383,7 @@
     document.addEventListener(
       'drag',
       function (e) {
-        if (dragged_card == null) {
+        if (dragged_card === null) {
           return;
         }
         const scrolling_height = 30;
