@@ -480,7 +480,6 @@
       .then((data) => {
         followedSectionData = data;
         processFollowedSectionData();
-        setTimeout(debouncedRequestFollowedSectionData, 1000 * 60 * 5);
       });
   }
 
@@ -1500,6 +1499,11 @@
     'load',
     function () {
       checkRootUiUpdated();
+      function periodicRequestFollowedSectionData() {
+        debouncedRequestFollowedSectionData();
+        setTimeout(periodicRequestFollowedSectionData, 1000 * 60 * 5);
+      }
+      periodicRequestFollowedSectionData();
     },
     false
   );
