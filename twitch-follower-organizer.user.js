@@ -510,8 +510,8 @@
     function (name, old_value, new_value, remote) {
       if (remote) {
         groups = new_value;
+        debouncedRequestFollowedSectionData();
       }
-      debouncedRequestFollowedSectionData();
     }
   );
 
