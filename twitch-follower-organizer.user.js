@@ -113,7 +113,7 @@
     if (findGroupIndexByName(group_name) !== -1) {
       throw new Error('ALREADY_EXIST');
     }
-    groups.splice(groups.length, 0, {
+    groups.splice(0, 0, {
       group_name: group_name,
       is_opened: false,
       hide_offline: true,
