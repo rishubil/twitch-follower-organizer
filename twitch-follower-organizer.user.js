@@ -14,10 +14,11 @@
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
+// @grant       GM_registerMenuCommand
 // ==/UserScript==
 
 // Define global objects for eslint
-/* globals GM_addStyle, GM_setValue, GM_getValue, _ */
+/* globals GM_addStyle, GM_setValue, GM_getValue, GM_registerMenuCommand, _ */
 
 (function () {
   'use strict';
@@ -497,6 +498,11 @@
     requestFollowedSectionData,
     200
   );
+  GM_registerMenuCommand(
+    'Update followed channels data',
+    requestFollowedSectionData,
+    'U'
+  );
 
   /**
    * Convert raw data into `grouped_channel_infos`
@@ -525,6 +531,7 @@
 
     renderFollowedSection();
   }
+  GM_registerMenuCommand('Refresh Group UI', processFollowedSectionData, 'R');
 
   /**
    * Render UI from data
