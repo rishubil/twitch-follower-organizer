@@ -15,16 +15,18 @@
 // @grant       GM_setValue
 // @grant       GM_getValue
 // @grant       GM_registerMenuCommand
+// @grant       GM_addValueChangeListener
 // ==/UserScript==
 
 // Define global objects for eslint
-/* globals GM_addStyle, GM_setValue, GM_getValue, GM_registerMenuCommand, _ */
+/* globals GM_addStyle, GM_setValue, GM_getValue, GM_registerMenuCommand, GM_addValueChangeListener, _ */
 
 (function () {
   'use strict';
 
   const CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
   const UNKNOWN_GROUP_NAME = 'ETC';
+  const GROUPS_VALUE_NAME = 'groups';
 
   /**
    * User defined channel group, with some states and options
@@ -84,14 +86,14 @@
         channels: null,
       },
     ];
-    groups = GM_getValue('groups', default_groups);
+    groups = GM_getValue(GROUPS_VALUE_NAME, default_groups);
   }
 
   /**
    * Save groups to GM storage
    */
   function saveGroups() {
-    GM_setValue('groups', groups);
+    GM_setValue(GROUPS_VALUE_NAME, groups);
     // console.log({groups});
   }
 
@@ -502,6 +504,15 @@
     'Update followed channels data',
     requestFollowedSectionData,
     'U'
+  );
+  GM_addValueChangeListener(
+    GROUPS_VALUE_NAME,
+    function (name, old_value, new_value, remote) {
+      if (remote) {
+        groups = new_value;
+      }
+      debouncedRequestFollowedSectionData();
+    }
   );
 
   /**
