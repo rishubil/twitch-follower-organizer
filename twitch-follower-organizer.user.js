@@ -242,89 +242,6 @@
   }
 
   /**
-   * Update `hide_offline` of group by group name
-   *
-   * This function will save the new groups and render UI.
-   * If there is no group named `group_name`, do nothing.
-   *
-   * @param {string} group_name The name of group
-   * @param {boolean} hide_offline `hide_offline` value to set
-   */
-  function setHideOffline(group_name, hide_offline) {
-    const group = getGroupByName(group_name);
-    if (group === null) {
-      return;
-    }
-    group['hide_offline'] = hide_offline;
-    saveGroups();
-    renderFollowedSection();
-  }
-
-  /**
-   * Update `color` of group by group name
-   *
-   * This function will save the new groups and render UI.
-   * If there is no group named `group_name`, do nothing.
-   *
-   * @param {string} group_name The name of group
-   * @param {string} color `color` value to set
-   */
-  function setColor(group_name, color) {
-    const group = getGroupByName(group_name);
-    if (group === null) {
-      return;
-    }
-    group['color'] = color;
-    saveGroups();
-    renderFollowedSection();
-  }
-
-  /**
-   * Change group name
-   *
-   * This function will save the new groups and render UI.
-   * If there is no group named `old_name`, do nothing.
-   *
-   * @param {string} old_name The name of target group to change name
-   * @param {string} new_name The new name of group
-   * @throws If there is the group named `new_name`
-   */
-  function changeGroupName(old_name, new_name) {
-    if (new_name === UNKNOWN_GROUP_NAME) {
-      throw new Error('ALREADY_EXIST');
-    }
-    if (findGroupIndexByName(new_name) !== -1) {
-      throw new Error('ALREADY_EXIST');
-    }
-    const group = getGroupByName(old_name);
-    if (group === null) {
-      return;
-    }
-    group['group_name'] = new_name;
-    saveGroups();
-    renderFollowedSection();
-  }
-
-  /**
-   * Update `channels` of group by group name
-   *
-   * This function will save the new groups and render UI.
-   * If there is no group named `group_name`, do nothing.
-   *
-   * @param {string} group_name The name of group
-   * @param {string[]} channels `channels` value to set
-   */
-  function setGroupChannels(group_name, channels) {
-    const group = getGroupByName(group_name);
-    if (group === null) {
-      return;
-    }
-    group['channels'] = channels;
-    saveGroups();
-    renderFollowedSection();
-  }
-
-  /**
    * Find group from groups that contains specific channel
    *
    * If there is no group contains the channel,
@@ -815,14 +732,6 @@
       tbsoEl = tbsoEl[0];
     }
     return tbsoEl;
-  }
-
-  /**
-   * Clear all contents in overlay
-   */
-  function clearOverlay() {
-    const tbsoEl = getOverlay();
-    tbsoEl.innerHTML = '';
   }
 
   /**
@@ -1417,7 +1326,7 @@
     );
     document.addEventListener(
       'dragend',
-      function (e) {
+      function () {
         dragged_card = null;
       },
       false

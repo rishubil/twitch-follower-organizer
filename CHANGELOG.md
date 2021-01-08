@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Remove unused functions and variables
+
 ## v0.1.14 - 2021-01-08
 
 ### Added
