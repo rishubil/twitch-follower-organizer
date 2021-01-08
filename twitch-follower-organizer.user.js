@@ -1210,6 +1210,17 @@
             e.preventDefault();
             return;
           }
+          const sideNavToggleButton = findEventTargetbyClassName(
+            e,
+            'collapse-toggle'
+          );
+          if (sideNavToggleButton !== null) {
+            setTimeout(() => {
+              renderFollowedSection();
+            }, 100);
+            return;
+          }
+
           const card = findEventTargetbyClassName(e, 'side-nav-card__link');
           if (card !== null) {
             if (card.classList.contains('tbs-group-header')) {

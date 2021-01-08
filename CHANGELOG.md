@@ -5,6 +5,7 @@
 ### Changed
 
 - Remove unused functions and variables
+- Render UI after sidebar toggled
 
 ## v0.1.14 - 2021-01-08
 
