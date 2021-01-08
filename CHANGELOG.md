@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.1.14 - 2021-01-08
+
 ### Added
 
 - Add change log
