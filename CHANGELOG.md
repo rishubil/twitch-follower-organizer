@@ -6,6 +6,10 @@
 
 - Add change log
 
+### Changed
+
+- Change the group setting overlay to close the way users expect it to be
+
 ## v0.1.13 - 2021-01-08
 
 ### Changed

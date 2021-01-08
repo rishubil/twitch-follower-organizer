@@ -1238,7 +1238,19 @@
           if (editButton !== null) {
             const group_index = Number(editButton.dataset.tbsGroupIndex);
             const group = groups[group_index];
-            showGroupSettingOverlay(group);
+
+            // check opened group settings is same with this group
+            const groupSettingEl = document.getElementsByClassName(
+              'tbs-group-setting'
+            );
+            if (
+              groupSettingEl.length !== 0 &&
+              groupSettingEl[0].dataset.tbsGroupName === group.group_name
+            ) {
+              clearGroupSettingOverlay();
+            } else {
+              showGroupSettingOverlay(group);
+            }
             e.preventDefault();
             return;
           }
@@ -1295,6 +1307,7 @@
               const group_index = Number(card.dataset.tbsGroupIndex);
               const group = groups[group_index];
               setGroupOpened(group['group_name'], !group['is_opened']);
+              clearGroupSettingOverlay();
               e.preventDefault();
               return;
             }
@@ -1313,8 +1326,16 @@
             }
             const href = link.getAttribute('href');
             reactHistory.push(href);
+            clearGroupSettingOverlay();
             e.preventDefault();
             return;
+          }
+          const group_setting = findEventTargetbyClassName(
+            e,
+            'tbs-group-setting'
+          );
+          if (group_setting === null) {
+            clearGroupSettingOverlay();
           }
         }
       },
@@ -1457,6 +1478,15 @@
           }
         }
         dragged_card = null;
+      },
+      false
+    );
+    document.addEventListener(
+      'keydown',
+      function (e) {
+        if (e.key === 'Escape') {
+          clearGroupSettingOverlay();
+        }
       },
       false
     );
