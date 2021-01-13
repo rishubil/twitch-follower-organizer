@@ -7,6 +7,10 @@
 - Add button to reset group color
 - Add button to lock a group
 
+- ### Changed
+
+- Change group drag and drop behavior more naturally
+
 ## v0.1.14 - 2021-01-08
 
 ### Added

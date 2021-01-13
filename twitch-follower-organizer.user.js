@@ -1573,7 +1573,24 @@
             );
             const group_index = Number(card.dataset.tbsGroupIndex);
             if (dragged_card.classList.contains('tbs-group-header')) {
-              moveGroupPosition(dragged_group_index, group_index);
+              const group_rect = card
+                .closest('.tbs-group')
+                .getBoundingClientRect();
+              if (dragged_group_index === group_index) {
+                // do nothing
+              } else if (dragged_group_index < group_index) {
+                if (e.clientY < group_rect.top + group_rect.height / 2) {
+                  moveGroupPosition(dragged_group_index, group_index - 1);
+                } else {
+                  moveGroupPosition(dragged_group_index, group_index);
+                }
+              } else {
+                if (e.clientY < group_rect.top + group_rect.height / 2) {
+                  moveGroupPosition(dragged_group_index, group_index);
+                } else {
+                  moveGroupPosition(dragged_group_index, group_index + 1);
+                }
+              }
             } else if (dragged_card.classList.contains('tbs-group-item')) {
               if (groups[group_index]['is_locked']) {
                 return;
