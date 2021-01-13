@@ -34,6 +34,7 @@
    * @typedef {object} Group
    * @property {string} group_name - The name of group
    * @property {boolean} is_opened - The state of group is opened or not
+   * @property {boolean} is_locked - The state of group is locked or not
    * @property {boolean} hide_offline - Whether to show channels that are offline
    * @property {string} color - The Color of group
    * @property {?string[]} channels - List of channels in the group (UNKNOWN group has null value)
@@ -82,12 +83,18 @@
       {
         group_name: UNKNOWN_GROUP_NAME,
         is_opened: false,
+        is_locked: false,
         hide_offline: true,
         color: GROUP_DEFUALT_COLOR,
         channels: null,
       },
     ];
     groups = GM_getValue(GROUPS_VALUE_NAME, default_groups);
+    _.forEach(groups, function (value) {
+      if (value['is_locked'] === undefined) {
+        value['is_locked'] = false;
+      }
+    });
   }
 
   /**
@@ -120,6 +127,7 @@
     groups.splice(0, 0, {
       group_name: group_name,
       is_opened: false,
+      is_locked: false,
       hide_offline: true,
       color: GROUP_DEFUALT_COLOR,
       channels: [],
@@ -133,11 +141,15 @@
    * If there is no group named `group_name`, do nothing.
    *
    * @param {string} group_name The name of group
+   * @throws If the group is locked
    */
   function removeGroup(group_name) {
     const group_index = findGroupIndexByName(group_name);
     if (findGroupIndexByName(group_name) === -1) {
       return;
+    }
+    if (groups[group_index]['is_locked']) {
+      throw new Error('LOCKED');
     }
     groups.splice(group_index, 1);
     saveGroups();
@@ -148,6 +160,7 @@
    * @param {number} source_group_index Source group index
    * @param {number} target_group_index Target group index
    * @param {string} channel_name Channel name to move
+   * @throws If the group is locked
    */
   function moveChannelBetweenGroups(
     source_group_index,
@@ -156,6 +169,12 @@
   ) {
     if (source_group_index === target_group_index) {
       return;
+    }
+    if (
+      groups[source_group_index]['is_locked'] ||
+      groups[target_group_index]['is_locked']
+    ) {
+      throw new Error('LOCKED');
     }
     const unknown_group_index = findGroupIndexByName(UNKNOWN_GROUP_NAME);
     if (source_group_index !== unknown_group_index) {
@@ -237,90 +256,8 @@
     if (group === null) {
       return;
     }
+    // It will be opened even if the group is locked
     group['is_opened'] = is_opened;
-    saveGroups();
-    renderFollowedSection();
-  }
-
-  /**
-   * Update `hide_offline` of group by group name
-   *
-   * This function will save the new groups and render UI.
-   * If there is no group named `group_name`, do nothing.
-   *
-   * @param {string} group_name The name of group
-   * @param {boolean} hide_offline `hide_offline` value to set
-   */
-  function setHideOffline(group_name, hide_offline) {
-    const group = getGroupByName(group_name);
-    if (group === null) {
-      return;
-    }
-    group['hide_offline'] = hide_offline;
-    saveGroups();
-    renderFollowedSection();
-  }
-
-  /**
-   * Update `color` of group by group name
-   *
-   * This function will save the new groups and render UI.
-   * If there is no group named `group_name`, do nothing.
-   *
-   * @param {string} group_name The name of group
-   * @param {string} color `color` value to set
-   */
-  function setColor(group_name, color) {
-    const group = getGroupByName(group_name);
-    if (group === null) {
-      return;
-    }
-    group['color'] = color;
-    saveGroups();
-    renderFollowedSection();
-  }
-
-  /**
-   * Change group name
-   *
-   * This function will save the new groups and render UI.
-   * If there is no group named `old_name`, do nothing.
-   *
-   * @param {string} old_name The name of target group to change name
-   * @param {string} new_name The new name of group
-   * @throws If there is the group named `new_name`
-   */
-  function changeGroupName(old_name, new_name) {
-    if (new_name === UNKNOWN_GROUP_NAME) {
-      throw new Error('ALREADY_EXIST');
-    }
-    if (findGroupIndexByName(new_name) !== -1) {
-      throw new Error('ALREADY_EXIST');
-    }
-    const group = getGroupByName(old_name);
-    if (group === null) {
-      return;
-    }
-    group['group_name'] = new_name;
-    saveGroups();
-    renderFollowedSection();
-  }
-
-  /**
-   * Update `channels` of group by group name
-   *
-   * This function will save the new groups and render UI.
-   * If there is no group named `group_name`, do nothing.
-   *
-   * @param {string} group_name The name of group
-   * @param {string[]} channels `channels` value to set
-   */
-  function setGroupChannels(group_name, channels) {
-    const group = getGroupByName(group_name);
-    if (group === null) {
-      return;
-    }
-    group['channels'] = channels;
     saveGroups();
     renderFollowedSection();
   }
@@ -747,7 +684,7 @@
         <div>
           <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
               class="tbs-group-item tbs-link side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
-              data-test-selector="followed-channel" data-tbs-group-index="<%- group_index %>" data-tbs-channel="<%-  channel_info.user.login %>" href="/<%- channel_info.user.login %>" draggable="true">
+              data-test-selector="followed-channel" data-tbs-group-index="<%- group_index %>" data-tbs-channel="<%-  channel_info.user.login %>" href="/<%- channel_info.user.login %>" draggable="<%- draggable %>">
               <div class="side-nav-card__avatar <% if (!is_live) { %>side-nav-card__avatar--offline <% } %>tw-align-items-center tw-flex-shrink-0">
                 <figure aria-label="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)" class="tw-avatar tw-avatar--size-30"><img
                     class="tw-block tw-border-radius-rounded tw-image tw-image-avatar"
@@ -795,6 +732,7 @@
     `);
     return templateTbsGroupItem({
       group_index: group_index,
+      draggable: groups[group_index]['is_locked'] ? 'false' : 'true',
       channel_info: channel_info,
       is_live: channel_info.content.viewersCount !== undefined,
     });
@@ -816,14 +754,6 @@
       tbsoEl = tbsoEl[0];
     }
     return tbsoEl;
-  }
-
-  /**
-   * Clear all contents in overlay
-   */
-  function clearOverlay() {
-    const tbsoEl = getOverlay();
-    tbsoEl.innerHTML = '';
   }
 
   /**
@@ -950,9 +880,27 @@
   }
 
   /**
+   * get group from setting overlay
+   *
+   * @return {?Group} Return group if there is the group else null.
+   */
+  function getGroupFromSettingOverlray() {
+    let groupSettingEl = document.getElementsByClassName('tbs-group-setting');
+    if (groupSettingEl.length === 0) {
+      return null;
+    } else {
+      groupSettingEl = groupSettingEl[0];
+    }
+    const target_group_name = groupSettingEl.dataset.tbsGroupName;
+    const group = getGroupByName(target_group_name);
+    return group;
+  }
+
+  /**
    * Reset group color input on setting overlay
    *
    * If there is no group setting overlay, do nothing.
+   * If the group is locked, do nothing.
    */
   function resetGroupColorOnSettingOverlay() {
     let groupSettingEl = document.getElementsByClassName('tbs-group-setting');
@@ -961,10 +909,35 @@
     } else {
       groupSettingEl = groupSettingEl[0];
     }
+    const target_group_name = groupSettingEl.dataset.tbsGroupName;
+    const group = getGroupByName(target_group_name);
+    if (group['is_locked']) {
+      return;
+    }
     const colorEl = groupSettingEl.getElementsByClassName(
       'tbs-group-setting-color'
     )[0];
     colorEl.value = GROUP_DEFUALT_COLOR;
+  }
+
+  /**
+   * Set group locked from setting overlay
+   *
+   * If there is no group setting overlay, do nothing.
+   *
+   * @return {?string} Return null if save successfully, else error text.
+   */
+  function setGroupLockedFromSettingOverlay(is_locked) {
+    const group = getGroupFromSettingOverlray();
+    if (group['group_name'] === UNKNOWN_GROUP_NAME) {
+      return '잠금 여부를 변경할 수 없는 그룹입니다.';
+    }
+
+    group['is_locked'] = is_locked;
+
+    saveGroups();
+
+    return null;
   }
 
   /**
@@ -983,6 +956,9 @@
     }
     const target_group_name = groupSettingEl.dataset.tbsGroupName;
     const group = getGroupByName(target_group_name);
+    if (group['is_locked']) {
+      return '그룹이 잠겨있습니다.';
+    }
 
     const group_name = groupSettingEl.getElementsByClassName(
       'tbs-group-setting-group-name'
@@ -1028,13 +1004,12 @@
    * @return {?string} Return null if delete successfully, else error text.
    */
   function deleteGroupFromSettingOverlay() {
-    let groupSettingEl = document.getElementsByClassName('tbs-group-setting');
-    if (groupSettingEl.length === 0) {
-      return;
-    } else {
-      groupSettingEl = groupSettingEl[0];
+    const group = getGroupFromSettingOverlray();
+    const target_group_name = group['group_name'];
+
+    if (group['is_locked']) {
+      return '그룹이 잠겨있습니다.';
     }
-    const target_group_name = groupSettingEl.dataset.tbsGroupName;
 
     if (target_group_name === UNKNOWN_GROUP_NAME) {
       // UNKNOWN group cannot be deleted
@@ -1089,7 +1064,7 @@
                     <input type="text"
                       class="tbs-group-setting-group-name tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
                       autocapitalize="off" autocorrect="off" autocomplete="off"
-                      spellcheck="false" value="<%- group['group_name'] %>"<% if (is_unknown_group) { %> disabled="disabled"<% } %>>
+                      spellcheck="false" value="<%- group['group_name'] %>"<% if (is_unknown_group || group['is_locked']) { %> disabled="disabled"<% } %>>
                   </div>
                   <div>
                     <div class="tw-mg-b-05 tw-mg-t-1">
@@ -1099,10 +1074,10 @@
                       <div class="tw-combo-input__input tw-flex-grow-1">
                         <div class="tw-relative">
                           <input type="text" class="tbs-group-setting-color tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-none tw-border-top-left-radius-medium tw-border-top-right-radius-none tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05" autocapitalize="off" autocorrect="off" autocomplete="off"
-                          spellcheck="false" value="<%- group['color'] %>">
+                          spellcheck="false" value="<%- group['color'] %>"<% if (group['is_locked']) { %> disabled="disabled"<% } %>>
                         </div>
                       </div>
-                      <button aria-label="색상 초기화" class="tbs-group-setting-color-reset-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-none tw-border-bottom-right-radius-medium tw-border-top-left-radius-none tw-border-top-right-radius-medium tw-combo-input__button-icon tw-core-button tw-core-button--secondary tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative">
+                      <button aria-label="색상 초기화" class="tbs-group-setting-color-reset-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-none tw-border-bottom-right-radius-medium tw-border-top-left-radius-none tw-border-top-right-radius-medium tw-combo-input__button-icon tw-core-button tw-core-button--secondary tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>">
                         <div class="tw-align-items-center tw-core-button-icon tw-inline-flex">
                           <div style="width: 2rem; height: 2rem;">
                             <div class="tw-icon">
@@ -1124,7 +1099,7 @@
                       <label class="tw-form-label">오프라인 채널 표시 여부</label>
                     </div>
                     <select
-                      class="tbs-group-setting-hide-offline tw-block tw-border-radius-medium tw-font-size-6 tw-full-width tw-pd-l-1 tw-pd-r-3 tw-pd-y-05 tw-select">
+                      class="tbs-group-setting-hide-offline tw-block tw-border-radius-medium tw-font-size-6 tw-full-width tw-pd-l-1 tw-pd-r-3 tw-pd-y-05 tw-select"<% if (group['is_locked']) { %> disabled="disabled"<% } %>>
                       <option value="false"<% if (!group['hide_offline']) { %>selected="selected"<% } %>>표시함</option>
                       <option value="true"<% if (group['hide_offline']) { %>selected="selected"<% } %>>표시하지 않음</option>
                     </select>
@@ -1132,24 +1107,61 @@
                 </div>
                 <div class="tw-mg-t-1 tw-align-items-center tw-flex tw-flex-grow-1 tw-flex-shrink-1 tw-full-width tw-justify-content-between">
                   <% if (!is_unknown_group) { %>
-                    <button aria-label="삭제"
-                    class="tbs-group-setting-delete-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
-                      class="tw-button-icon__icon">
-                      <div style="width: 2rem; height: 2rem;">
-                        <div class="tw-icon">
-                          <div class="tw-aspect">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                              <line x1="4" y1="7" x2="20" y2="7" />
-                              <line x1="10" y1="11" x2="10" y2="17" />
-                              <line x1="14" y1="11" x2="14" y2="17" />
-                              <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
-                              <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-                            </svg>
+                    <div>
+                      <button aria-label="삭제"
+                      class="tbs-group-setting-delete-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>"><span
+                        class="tw-button-icon__icon">
+                        <div style="width: 2rem; height: 2rem;">
+                          <div class="tw-icon">
+                            <div class="tw-aspect">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <line x1="4" y1="7" x2="20" y2="7" />
+                                <line x1="10" y1="11" x2="10" y2="17" />
+                                <line x1="14" y1="11" x2="14" y2="17" />
+                                <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                              </svg>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </span></button>
+                      </span></button>
+                      <% if (group['is_locked']) { %>
+                        <button aria-label="잠금 해제"
+                        class="tbs-group-setting-unlock-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                          class="tw-button-icon__icon">
+                          <div style="width: 2rem; height: 2rem;">
+                            <div class="tw-icon">
+                              <div class="tw-aspect">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                  <rect x="5" y="11" width="14" height="10" rx="2" />
+                                  <circle cx="12" cy="16" r="1" />
+                                  <path d="M8 11v-5a4 4 0 0 1 8 0" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </span></button>
+                      <% } else { %>
+                        <button aria-label="잠금"
+                        class="tbs-group-setting-lock-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                          class="tw-button-icon__icon">
+                          <div style="width: 2rem; height: 2rem;">
+                            <div class="tw-icon">
+                              <div class="tw-aspect">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                  <rect x="5" y="11" width="14" height="10" rx="2" />
+                                  <circle cx="12" cy="16" r="1" />
+                                  <path d="M8 11v-4a4 4 0 0 1 8 0v4" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </span></button>
+                      <% } %>
+                    </div>
                   <% } else { %>
                     <div></div>
                   <% } %>
@@ -1170,7 +1182,7 @@
                         </div>
                       </span></button>
                     <button aria-label="저장"
-                      class="tbs-group-setting-save-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                      class="tbs-group-setting-save-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>"><span
                         class="tw-button-icon__icon">
                         <div style="width: 2rem; height: 2rem;">
                           <div class="tw-icon">
@@ -1206,7 +1218,7 @@
    * @param {string} class_name class name to find
    * @param {number} max_bubble_count maximum recursive depth, default is 10
    */
-  function findEventTargetbyClassName(
+  function findEventTargetByClassName(
     event,
     class_name,
     max_bubble_count = 20
@@ -1247,7 +1259,7 @@
       'click',
       function (e) {
         if (e.target) {
-          const addGroupButton = findEventTargetbyClassName(
+          const addGroupButton = findEventTargetByClassName(
             e,
             'tbs-add-group-button'
           );
@@ -1272,7 +1284,7 @@
               }
             }
           }
-          const editButton = findEventTargetbyClassName(e, 'tbs-edit-button');
+          const editButton = findEventTargetByClassName(e, 'tbs-edit-button');
           if (editButton !== null) {
             const group_index = Number(editButton.dataset.tbsGroupIndex);
             const group = groups[group_index];
@@ -1292,16 +1304,60 @@
             e.preventDefault();
             return;
           }
-          const groupSettingColorResetButton = findEventTargetbyClassName(
+          const groupSettingColorResetButton = findEventTargetByClassName(
             e,
             'tbs-group-setting-color-reset-button'
           );
           if (groupSettingColorResetButton !== null) {
+            const group = getGroupFromSettingOverlray();
+            if (group !== null && group['is_locked']) {
+              return;
+            }
             resetGroupColorOnSettingOverlay();
             e.preventDefault();
             return;
           }
-          const groupSettingCancelButton = findEventTargetbyClassName(
+          const groupSettingLockButton = findEventTargetByClassName(
+            e,
+            'tbs-group-setting-lock-button'
+          );
+          if (groupSettingLockButton !== null) {
+            const group = getGroupFromSettingOverlray();
+            const setResult = setGroupLockedFromSettingOverlay(true);
+            if (setResult === null) {
+              showGroupSettingOverlay(group);
+              processFollowedSectionData();
+            } else {
+              const errorEl = document.getElementsByClassName(
+                'tbs-group-settings-error'
+              )[0];
+              errorEl.style.display = 'block';
+              errorEl.innerHTML = setResult;
+            }
+            e.preventDefault();
+            return;
+          }
+          const groupSettingUnlockButton = findEventTargetByClassName(
+            e,
+            'tbs-group-setting-unlock-button'
+          );
+          if (groupSettingUnlockButton !== null) {
+            const group = getGroupFromSettingOverlray();
+            const setResult = setGroupLockedFromSettingOverlay(false);
+            if (setResult === null) {
+              showGroupSettingOverlay(group);
+              processFollowedSectionData();
+            } else {
+              const errorEl = document.getElementsByClassName(
+                'tbs-group-settings-error'
+              )[0];
+              errorEl.style.display = 'block';
+              errorEl.innerHTML = setResult;
+            }
+            e.preventDefault();
+            return;
+          }
+          const groupSettingCancelButton = findEventTargetByClassName(
             e,
             'tbs-group-setting-cancel-button'
           );
@@ -1310,11 +1366,15 @@
             e.preventDefault();
             return;
           }
-          const groupSettingSaveButton = findEventTargetbyClassName(
+          const groupSettingSaveButton = findEventTargetByClassName(
             e,
             'tbs-group-setting-save-button'
           );
           if (groupSettingSaveButton !== null) {
+            const group = getGroupFromSettingOverlray();
+            if (group !== null && group['is_locked']) {
+              return;
+            }
             const saveResult = saveGroupFromSettingOverlay();
             if (saveResult === null) {
               clearGroupSettingOverlay();
@@ -1329,11 +1389,15 @@
             e.preventDefault();
             return;
           }
-          const groupSettingDeleteButton = findEventTargetbyClassName(
+          const groupSettingDeleteButton = findEventTargetByClassName(
             e,
             'tbs-group-setting-delete-button'
           );
           if (groupSettingDeleteButton !== null) {
+            const group = getGroupFromSettingOverlray();
+            if (group !== null && group['is_locked']) {
+              return;
+            }
             const deleteResult = deleteGroupFromSettingOverlay();
             if (deleteResult === null) {
               clearGroupSettingOverlay();
@@ -1348,7 +1412,7 @@
             e.preventDefault();
             return;
           }
-          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(e, 'side-nav-card__link');
           if (card !== null) {
             if (card.classList.contains('tbs-group-header')) {
               const group_index = Number(card.dataset.tbsGroupIndex);
@@ -1359,7 +1423,7 @@
               return;
             }
           }
-          const link = findEventTargetbyClassName(e, 'tbs-link');
+          const link = findEventTargetByClassName(e, 'tbs-link');
           if (link !== null) {
             if (
               e.getModifierState('Alt') ||
@@ -1377,7 +1441,7 @@
             e.preventDefault();
             return;
           }
-          const group_setting = findEventTargetbyClassName(
+          const group_setting = findEventTargetByClassName(
             e,
             'tbs-group-setting'
           );
@@ -1395,7 +1459,7 @@
           return;
         }
         if (e.target) {
-          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(e, 'side-nav-card__link');
           if (card !== null) {
             if (card.classList.contains('tbs-group-item')) {
               const group_index = Number(card.dataset.tbsGroupIndex);
@@ -1413,7 +1477,7 @@
             }
           }
 
-          const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
+          const cardOverlay = findEventTargetByClassName(e, 'tbs-card-overlay');
           if (cardOverlay !== null) {
             shouldShowCardOverlay = true;
             e.preventDefault();
@@ -1427,7 +1491,7 @@
       'mouseout',
       function (e) {
         if (e.target) {
-          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(e, 'side-nav-card__link');
           if (card !== null) {
             if (card.classList.contains('tbs-group-item')) {
               shouldShowCardOverlay = false;
@@ -1437,7 +1501,7 @@
             }
           }
 
-          const cardOverlay = findEventTargetbyClassName(e, 'tbs-card-overlay');
+          const cardOverlay = findEventTargetByClassName(e, 'tbs-card-overlay');
           if (cardOverlay !== null) {
             shouldShowCardOverlay = false;
             debouncedClearCardOverlay();
@@ -1452,7 +1516,7 @@
       'dragstart',
       function (e) {
         if (e.target) {
-          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(e, 'side-nav-card__link');
           if (card !== null) {
             shouldShowCardOverlay = false;
             debouncedClearCardOverlay();
@@ -1464,7 +1528,7 @@
     );
     document.addEventListener(
       'dragend',
-      function (e) {
+      function () {
         dragged_card = null;
       },
       false
@@ -1502,7 +1566,7 @@
       'drop',
       function (e) {
         if (e.target) {
-          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(e, 'side-nav-card__link');
           if (card !== null && dragged_card !== null) {
             const dragged_group_index = Number(
               dragged_card.dataset.tbsGroupIndex
@@ -1511,6 +1575,9 @@
             if (dragged_card.classList.contains('tbs-group-header')) {
               moveGroupPosition(dragged_group_index, group_index);
             } else if (dragged_card.classList.contains('tbs-group-item')) {
+              if (groups[group_index]['is_locked']) {
+                return;
+              }
               const dragged_channel_name = dragged_card.dataset.tbsChannel;
               moveChannelBetweenGroups(
                 dragged_group_index,

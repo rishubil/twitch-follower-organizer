@@ -5,6 +5,7 @@
 ### Added
 
 - Add button to reset group color
+- Add button to lock a group
 
 ## v0.1.14 - 2021-01-08
 
