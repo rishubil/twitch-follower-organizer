@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.1.15 - 2021-01-13
+
 ### Added
 
 - Add button to reset group color
