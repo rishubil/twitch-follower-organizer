@@ -9,7 +9,7 @@
 - Add button to reset group color
 - Add button to lock a group
 
-- ### Changed
+### Changed
 
 - Change group drag and drop behavior more naturally
 
