@@ -27,6 +27,7 @@
   const CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
   const UNKNOWN_GROUP_NAME = 'ETC';
   const GROUPS_VALUE_NAME = 'groups';
+  const GROUP_DEFUALT_COLOR = '#a970ff';
 
   /**
    * User defined channel group, with some states and options
@@ -82,7 +83,7 @@
         group_name: UNKNOWN_GROUP_NAME,
         is_opened: false,
         hide_offline: true,
-        color: '#a970ff',
+        color: GROUP_DEFUALT_COLOR,
         channels: null,
       },
     ];
@@ -120,7 +121,7 @@
       group_name: group_name,
       is_opened: false,
       hide_offline: true,
-      color: '#a970ff',
+      color: GROUP_DEFUALT_COLOR,
       channels: [],
     });
     saveGroups();
@@ -949,6 +950,24 @@
   }
 
   /**
+   * Reset group color input on setting overlay
+   *
+   * If there is no group setting overlay, do nothing.
+   */
+  function resetGroupColorOnSettingOverlay() {
+    let groupSettingEl = document.getElementsByClassName('tbs-group-setting');
+    if (groupSettingEl.length === 0) {
+      return;
+    } else {
+      groupSettingEl = groupSettingEl[0];
+    }
+    const colorEl = groupSettingEl.getElementsByClassName(
+      'tbs-group-setting-color'
+    )[0];
+    colorEl.value = GROUP_DEFUALT_COLOR;
+  }
+
+  /**
    * Save group from setting overlay
    *
    * If there is no group setting overlay, do nothing.
@@ -1076,10 +1095,29 @@
                     <div class="tw-mg-b-05 tw-mg-t-1">
                       <label class="tw-form-label">색상</label>
                     </div>
-                    <input type="text"
-                      class="tbs-group-setting-color tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
-                      autocapitalize="off" autocorrect="off" autocomplete="off"
-                      spellcheck="false" value="<%- group['color'] %>">
+                    <div class="tw-combo-input tw-flex tw-full-width">
+                      <div class="tw-combo-input__input tw-flex-grow-1">
+                        <div class="tw-relative">
+                          <input type="text" class="tbs-group-setting-color tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-none tw-border-top-left-radius-medium tw-border-top-right-radius-none tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05" autocapitalize="off" autocorrect="off" autocomplete="off"
+                          spellcheck="false" value="<%- group['color'] %>">
+                        </div>
+                      </div>
+                      <button aria-label="색상 초기화" class="tbs-group-setting-color-reset-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-none tw-border-bottom-right-radius-medium tw-border-top-left-radius-none tw-border-top-right-radius-medium tw-combo-input__button-icon tw-core-button tw-core-button--secondary tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative">
+                        <div class="tw-align-items-center tw-core-button-icon tw-inline-flex">
+                          <div style="width: 2rem; height: 2rem;">
+                            <div class="tw-icon">
+                              <div class="tw-aspect">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                  <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                                  <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <div class="tw-mg-b-05 tw-mg-t-1">
@@ -1251,6 +1289,15 @@
             } else {
               showGroupSettingOverlay(group);
             }
+            e.preventDefault();
+            return;
+          }
+          const groupSettingColorResetButton = findEventTargetbyClassName(
+            e,
+            'tbs-group-setting-color-reset-button'
+          );
+          if (groupSettingColorResetButton !== null) {
+            resetGroupColorOnSettingOverlay();
             e.preventDefault();
             return;
           }
