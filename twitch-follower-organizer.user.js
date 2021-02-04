@@ -795,6 +795,9 @@
             <div class="tw-pd-x-05 tw-pd-y-05">
             <% if (is_live) { %>
               <div class="online-side-nav-channel-tooltip__body tw-pd-x-05">
+                <div class="tw-border-radius-small tw-card-img tw-overflow-hidden">
+                  <img class="tw-image" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg"/>
+                </div>
                 <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2"><%- channel_info.user.broadcastSettings.title %></p>
               </div>
             <% } else { %>

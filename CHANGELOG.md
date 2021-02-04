@@ -6,6 +6,7 @@
 
 - Remove unused functions and variables
 - Render UI after sidebar toggled
+- Add thumbnail image in overlay for live stream
 
 ## v0.1.14 - 2021-01-08
 
