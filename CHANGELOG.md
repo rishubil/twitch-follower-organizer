@@ -8,6 +8,17 @@
 - Render UI after sidebar toggled
 - Add thumbnail image in overlay for live stream
 
+## v0.1.15 - 2021-01-13
+
+### Added
+
+- Add button to reset group color
+- Add button to lock a group
+
+### Changed
+
+- Change group drag and drop behavior more naturally
+
 ## v0.1.14 - 2021-01-08
 
 ### Added
