@@ -1416,7 +1416,7 @@
             return;
           }
 
-          const sideNavToggleButton = findEventTargetbyClassName(
+          const sideNavToggleButton = findEventTargetByClassName(
             e,
             'collapse-toggle'
           );
@@ -1427,7 +1427,7 @@
             return;
           }
 
-          const card = findEventTargetbyClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(e, 'side-nav-card__link');
           if (card !== null) {
             if (card.classList.contains('tbs-group-header')) {
               const group_index = Number(card.dataset.tbsGroupIndex);
