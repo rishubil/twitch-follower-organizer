@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.1.17 - 2021-02-12
+
 ### Changed
 
 - Add css for avatar
