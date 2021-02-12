@@ -336,6 +336,12 @@
         width: 100%;
         overflow: hidden;
       }
+      .tw-avatar {
+        position: relative;
+        background-color: inherit;
+        width: 30px;
+        height: 30px;
+      }
       .side-nav-section:first-child .tw-transition {
         display: none!important;
       }
