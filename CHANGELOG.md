@@ -5,6 +5,7 @@
 ### Changed
 
 - Update overlay UI for online channels
+
 ## v0.1.17 - 2021-02-12
 
 ### Changed

@@ -840,8 +840,9 @@
                     </div>
                   </div>
                 </div>
-                <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2"><%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %> · 시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명</p>
+                <p class="tw-c-text-link tw-ellipsis tw-line-clamp-2"><%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %></p>
                 <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2"><%- channel_info.user.broadcastSettings.title %></p>
+                <p class="tw-c-text-alt-2 tw-ellipsis tw-line-clamp-2">시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명</p>
               </div>
             <% } else { %>
               <div>
