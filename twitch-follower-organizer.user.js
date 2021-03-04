@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Follower Organizer
 // @namespace   twitch-follower-organizer
-// @version     0.1.16
+// @version     0.1.17
 // @author      Nesswit
 // @description "We need better sidebar" - by wonzy_world, 2021
 // @supportURL  https://github.com/rishubil/twitch-follower-organizer/issues
@@ -335,6 +335,12 @@
         position: relative;
         width: 100%;
         overflow: hidden;
+      }
+      .tw-avatar {
+        position: relative;
+        background-color: inherit;
+        width: 30px;
+        height: 30px;
       }
       .side-nav-section:first-child .tw-transition {
         display: none!important;

@@ -5,6 +5,11 @@
 ### Changed
 
 - Update overlay UI for online channels
+## v0.1.17 - 2021-02-12
+
+### Changed
+
+- Add css for avatar
 
 ## v0.1.16 - 2021-02-04
 
