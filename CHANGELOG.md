@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.1.18 - 2021-03-04
+
 ### Changed
 
 - Update overlay UI for online channels
