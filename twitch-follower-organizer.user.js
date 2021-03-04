@@ -816,10 +816,25 @@
           <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block" role="dialog">
             <div class="tw-pd-x-05 tw-pd-y-05">
             <% if (is_live) { %>
-              <div class="online-side-nav-channel-tooltip__body tw-pd-x-05">
-                <div class="tw-border-radius-small tw-card-img tw-overflow-hidden">
-                  <img class="tw-image" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg"/>
+              <div class="online-side-nav-channel-tooltip__body online-side-nav-channel-tooltip__body--image tw-pd-x-05">
+                <div class="tw-pd-b-1 tw-pd-t-05">
+                  <div class="tw-c-text-overlay">
+                    <div class="tw-relative">
+                      <div class="ScAspectRatio-sc-1sw3lwy-1 dNNaBC tw-aspect">
+                        <div class="ScAspectSpacer-sc-1sw3lwy-0 hhnnBG"></div>
+                        <img altsrc="https://static-cdn.jtvnw.net/ttv-static/404_preview-160x90.jpg" alt="<%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %>" class="tw-image" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg">
+                      </div>
+                      <div class="tw-absolute tw-full-height tw-full-width tw-left-0 tw-media-card-image__corners tw-top-0">
+                        <div class="tw-absolute tw-left-0 tw-mg-1 tw-top-0">
+                          <div class="ScChannelStatusTextIndicator-sc-1f5ghgf-0 dVmkcd tw-channel-status-text-indicator" font-size="font-size-6">
+                            <p class="tw-strong tw-upcase tw-white-space-nowrap">생방송</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2"><%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %> · 시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명</p>
                 <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2"><%- channel_info.user.broadcastSettings.title %></p>
               </div>
             <% } else { %>
