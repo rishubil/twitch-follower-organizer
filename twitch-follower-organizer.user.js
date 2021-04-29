@@ -828,7 +828,7 @@
                     <div class="tw-relative">
                       <div class="ScAspectRatio-sc-1sw3lwy-1 dNNaBC tw-aspect">
                         <div class="ScAspectSpacer-sc-1sw3lwy-0 hhnnBG"></div>
-                        <img altsrc="https://static-cdn.jtvnw.net/ttv-static/404_preview-160x90.jpg" alt="<%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %>" class="tw-image" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg">
+                        <img altsrc="https://static-cdn.jtvnw.net/ttv-static/404_preview-160x90.jpg" alt="<%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %>" class="tw-image" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg?tf=<%- time_factor %>">
                       </div>
                       <div class="tw-absolute tw-full-height tw-full-width tw-left-0 tw-media-card-image__corners tw-top-0">
                         <div class="tw-absolute tw-left-0 tw-mg-1 tw-top-0">
@@ -886,6 +886,7 @@
     return templateTbsCardOverlay({
       channel_info: channel_info,
       is_live: channel_info.content.viewersCount !== undefined,
+      time_factor: Math.round(new Date().getTime() / (1000 * 60 * 5)), // it will be changed every 5 minutes
     });
   }
 

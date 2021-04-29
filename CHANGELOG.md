@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Force reload thumbnails for live streaming channels every 5 minutes
+
 ## v0.1.18 - 2021-03-04
 
 ### Changed
