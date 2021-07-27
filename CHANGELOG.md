@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## v0.1.20 - 2021-07-27
+
+### Changed
+
+- Fix broken layout
+
 ## v0.1.19 - 2021-04-29
 
 ### Changed

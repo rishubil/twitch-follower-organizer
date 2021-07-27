@@ -323,7 +323,106 @@
    */
   function injectStyle() {
     GM_addStyle(/*css*/ `
-      .tw-channel-status-indicator {
+      .tbs-tw-transition {
+        transition-delay: 0ms;
+        transition-duration: 250ms;
+        transition-property: none;
+        opacity: 1;
+        transform: scale(1);
+      }
+      .tbs-tw-relative {
+        position: relative !important;
+      }
+      .tbs-tw-side-nav-card__link {
+        padding: 0.5rem 1rem !important;
+        display: flex !important;
+        -webkit-box-align: center !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+      }
+      .tbs-tw-side-nav-card__link:hover {
+        background: #e6e6ea;
+        text-decoration: none;
+        color: var(--color-text-link-hover);
+      }
+      .tw-root--theme-dark .tbs-tw-side-nav-card__link:hover {
+        background: #26262c;
+      }
+      .tbs-tw-link {
+        text-decoration: none;
+        color: var(--color-text-link);
+      }
+      .tbs-tw-flex-shrink-0 {
+        flex-shrink: 0 !important;
+        -webkit-box-align: center !important;
+        align-items: center !important;
+      }
+      .tbs-tw-avatar--size-30 {
+        position: relative;
+        background-color: inherit;
+        width: 3rem;
+        height: 3rem;
+      }
+      .tbs-tw-image-avatar {
+        display: block !important;
+        border-radius: 9000px !important;
+        width: 100% !important;
+      }
+      .tbs-tw-side-nav-card__metadata_container {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        display: flex !important;
+        width: 100% !important;
+        -webkit-box-pack: justify !important;
+        justify-content: space-between !important;
+      }
+      .tbs-tw-side-nav-card__metadata_wrapper {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        margin-left: 1rem !important;
+        width: 100% !important;
+      }
+      .tbs-tw-side-nav-card__title {
+        display: flex !important;
+        -webkit-box-align: center !important;
+        align-items: center !important;
+      }
+      .tbs-tw-side-nav-title {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        -webkit-box-flex: 1 !important;
+        flex-grow: 1 !important;
+        font-weight: var(--font-weight-semibold) !important;
+        color: var(--color-text-alt) !important;
+        font-size: var(--font-size-5) !important;
+        line-height: var(--line-height-heading) !important;
+      }
+      .tbs-tw-side-nav-card__metadata {
+        padding-right: 0.5rem !important;
+      }
+      .tbs-tw-side-nav-metadata {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        color: var(--color-text-alt-2) !important;
+        font-size: var(--font-size-6) !important;
+        line-height: var(--line-height-heading) !important;
+      }
+      .tbs-tw-side-nav-card__live-status {
+        min-width: 4rem;
+        flex-shrink: 0 !important;
+        margin-left: 0.5rem !important;
+      }
+      .tbs-tw-side-nav-live-status {
+        display: flex !important;
+        -webkit-box-align: center !important;
+        align-items: center !important;
+      }
+      .tbs-tw-channel-status-indicator {
         background-color: var(--color-fill-live);
         border-radius: var(--border-radius-rounded);
         width: 0.8rem;
@@ -331,12 +430,64 @@
         display: inline-block;
         position: relative;
       }
-      .tw-aspect {
+      .tbs-tw-channel-status-count-wrapper {
+        margin-left: 0.5rem !important;
+      }
+      .tbs-tw-channel-status-count {
+        color: var(--color-text-alt) !important;
+        font-size: var(--font-size-6) !important;
+      }
+      .tbs-tw-button {
+        display: inline-flex;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        justify-content: center;
+        user-select: none;
+        height: var(--button-size-default);
+        width: var(--button-size-default);
+        border-radius: var(--border-radius-medium);
+        background-color: var(--color-background-button-text-default);
+        color: var(--color-fill-button-icon);
+        position: relative;
+        vertical-align: middle;
+        overflow: hidden;
+        text-decoration: none;
+        white-space: nowrap;
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--button-text-default);
+      }
+      .tbs-tw-button:hover {
+        background-color: var(--color-background-button-text-hover);
+        color: var(--color-fill-button-icon-hover);
+        text-decoration: none;
+      }
+      .tbs-tw-icon {
+        display: inline-flex;
+        -webkit-box-align: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+      }
+      .tbs-tw-icon-inner {
+        position: relative;
+        width: 100%;
+        min-height: 100%;
+        overflow: hidden;
+      }
+      .tbs-tw-icon-svg {
+        position: absolute;
+        left: 0px;
+        width: 100%;
+        min-height: 100%;
+        top: 0px;
+      }
+      .tbs-tw-aspect {
         position: relative;
         width: 100%;
         overflow: hidden;
       }
-      .tw-avatar {
+      .tbs-tw-avatar {
         position: relative;
         background-color: inherit;
         width: 30px;
@@ -383,6 +534,128 @@
         position: absolute;
         z-index: 5200;
       }
+      .tbs-tw-dialog {
+        display: inline-block;
+        min-width: 16rem;
+        max-width: 90vw;
+        border-radius: 0.6rem !important;
+        background-color: var(--color-background-base) !important;
+        box-shadow: var(--shadow-elevation-2) !important;
+        color: inherit !important;
+      }
+      .tbs-tw-interactable {
+        display: block;
+        width: 100%;
+        color: inherit;
+      }
+      .tbs-tw-interactable:hover {
+        background-color: var(--color-background-interactable-hover);
+        color: inherit;
+        text-decoration: none;
+      }
+      .tbs-tw-vod-card {
+        display: flex !important;
+        flex-flow: row nowrap !important;
+        -webkit-box-align: center !important;
+        align-items: center !important;
+      }
+      .tbs-tw-vod-card-image {
+        flex-shrink: 0;
+        background-color: var(--color-background-placeholder);
+        overflow: hidden;
+        width: 8rem;
+        border-radius: 0.2rem !important;
+      }
+      .tbs-tw-vod-card-image-aspect {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+      }
+      .tbs-tw-vod-card-image-aspect-spacer {
+        padding-bottom: 56.25%;
+      }
+      .tbs-tw-vod-card-image-aspect-img {
+        position: absolute;
+        left: 0px;
+        width: 100%;
+        min-height: 100%;
+        top: 0px;
+      }
+      .tbs-tw-vod-card-body {
+        min-width: 30rem;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+      }
+      .tbs-tw-vod-card-body-title {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        color: var(--color-text-base) !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: normal !important;
+      }
+      .tbs-tw-vod-card-body-metadata {
+        color: var(--color-text-alt-2) !important;
+      }
+      .tbs-tw-vod-show-all {
+        text-align: center !important;
+        padding: 0.5rem !important;
+      }
+      .tbs-tw-vod-show-all-text {
+        color: var(--color-text-base) !important;
+      }
+      .tbs-tw-live-card-body {
+        width: 30rem;
+        padding: 0.5rem !important;
+      }
+      .tbs-tw-media-card-image__corners {
+        pointer-events: none;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        justify-content: center;
+      }
+      .tbs-tw-channel-status-text-indicator-wrapper {
+        position: absolute !important;
+        top: 0px !important;
+        left: 0px !important;
+        margin: 1rem !important;
+      }
+      .tbs-tw-channel-status-text-indicator {
+        display: inline-block;
+        text-align: center;
+        pointer-events: none;
+        padding: 0px 0.5rem;
+        border-radius: var(--border-radius-medium);
+        font-size: var(--font-size-6);
+        background-color: var(--color-fill-live);
+        color: var(--color-text-overlay);
+      }
+      .tbs-tw-channel-status-text-indicator-text {
+        white-space: nowrap !important;
+        text-transform: uppercase !important;
+        font-weight: var(--font-weight-semibold) !important;
+      }
+      .tbs-tw-live-card-title {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        font-size: var(--font-size-5) !important;
+      }
+      .tbs-tw-live-card-text {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        font-size: var(--font-size-5) !important;
+        color: var(--color-text-alt-2) !important;
+      }
       .tbs-group-setting {
         width: 22rem;
       }
@@ -394,6 +667,109 @@
       }
       .tbs-group-setting-delete-button .tbs-button-svg {
         stroke: var(--color-text-alert);
+      }
+      .tbs-tw-input {
+        font-family: inherit;
+        appearance: none;
+        background-clip: padding-box;
+        line-height: 1.5;
+        transition: box-shadow var(--timing-short) ease-in, border var(--timing-short) ease-in, background-color var(--timing-short) ease-in;
+        border-style: solid;
+        border-width: var(--border-width-input);
+        border-color: var(--color-border-input);
+        color: var(--color-text-input);
+        background-color: var(--color-background-input);
+        display: block;
+        width: 100%;
+        height: var(--input-size-default);
+        border-radius: 0.4rem !important;
+        padding: 0.5rem 1rem !important;
+        font-size: var(--font-size-6) !important;
+      }
+      .tbs-tw-input:focus {
+        outline: none;
+        border-color: var(--color-border-input-focus);
+        background-color: var(--color-background-input-focus);
+      }
+      .tbs-tw-input:hover {
+        outline: none;
+        border-color: var(--color-border-input-hover);
+        background-color: var(--color-background-input);
+      }
+      .tbs-tw-combo-input {
+        display: flex !important;
+        width: 100% !important;
+      }
+      .tbs-tw-combo-input__input {
+        -webkit-box-flex: 1;
+        flex-grow: 1;
+        margin-right: 1px;
+      }
+      .tbs-tw-combo-input .tbs-tw-input {
+        border-radius: 0.4rem 0px 0px 0.4rem !important;
+      }
+      .tbs-tw-combo-input__button-icon {
+        width: 3rem;
+        display: inline-flex;
+        position: relative;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        justify-content: center;
+        vertical-align: middle;
+        overflow: hidden;
+        text-decoration: none;
+        white-space: nowrap;
+        user-select: none;
+        font-weight: var(--font-weight-semibold);
+        border-top-right-radius: var(--border-radius-medium);
+        border-bottom-right-radius: var(--border-radius-medium);
+        font-size: var(--button-text-default);
+        height: var(--button-size-default);
+        background-color: var(--color-background-button-secondary-default);
+        color: var(--color-text-button-secondary);
+      }
+      .tbs-tw-select {
+        font-family: inherit;
+        appearance: none;
+        background-clip: padding-box;
+        transition: box-shadow var(--timing-short) ease-in, border var(--timing-short) ease-in, background-color var(--timing-short) ease-in;
+        border-style: solid;
+        border-width: var(--border-width-input);
+        border-color: var(--color-border-input);
+        color: var(--color-text-input);
+        background-color: var(--color-background-input);
+        background-image: url(data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2020%2020%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%3Cpath%20fill%3D%22%23efeff1%22%20d%3D%22M10.5%2013.683l2.85-2.442%201.3%201.518-3.337%202.86a1.25%201.25%200%200%201-1.626%200l-3.338-2.86%201.302-1.518%202.849%202.442zm0-7.366L7.65%208.76l-1.3-1.518%203.337-2.86a1.25%201.25%200%200%201%201.627%200l3.337%202.86-1.302%201.518L10.5%206.317z%22%20%2F%3E%0A%3C%2Fsvg%3E);
+        background-repeat: no-repeat;
+        background-position: right 0.8rem center;
+        background-size: 2rem;
+        cursor: pointer;
+        line-height: normal;
+        display: block !important;
+        border-radius: 0.4rem !important;
+        font-size: var(--font-size-6) !important;
+        padding: 0.5rem 3rem 0.5rem 1rem !important;
+        width: 100% !important;
+      }
+      .tbs-tw-select:hover {
+        outline: none;
+        border-color: var(--color-border-input-hover);
+        background-color: var(--color-background-input);
+      }
+      .tbs-tw-select:focus {
+        outline: none;
+        border-color: var(--color-border-input-focus);
+        background-color: var(--color-background-input-focus);
+      }
+      .tbs-edit-group-overlay-buttons {
+        display: flex !important;
+        width: 100%;
+        -webkit-box-flex: 1;
+        flex-grow: 1;
+        flex-shrink: 1;
+        -webkit-justify-content: space-between;
+        justify-content: space-between;
+        margin-top: 1rem;
       }
     `);
   }
@@ -532,12 +908,12 @@
 
         const templateAddGroupButton = _.template(/*html*/ `
           <button aria-label="그룹 추가"
-            class="tbs-add-group-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+            class="tbs-add-group-button tbs-tw-button"><span
                 class="tw-button-icon__icon">
                 <div style="width: 2rem; height: 2rem;">
-                    <div class="tw-icon">
-                        <div class="tw-aspect">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="tbs-tw-icon">
+                        <div class="tbs-tw-icon-inner">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg tbs-tw-icon-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
                             <line x1="12" y1="10" x2="12" y2="16" />
@@ -599,16 +975,16 @@
 
     const templateTbsGroup = _.template(/*html*/ `
       <div class="tbs-group">
-        <div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
-          style="transition: transform 250ms ease 0ms, opacity;">
+        <div class="tbs-tw-transition"
+          style="transition-property: transform, opacity; transition-timing-function: ease;">
           <div>
-            <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
-                class="tbs-group-header side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
+            <div class="side-nav-card tbs-tw-relative" data-test-selector="side-nav-card"><a
+                class="tbs-group-header tbs-tw-side-nav-card__link tbs-tw-link"
                 data-tbs-group-index="<%- group_index %>" href="#" draggable="true">
-                <div class="side-nav-card__avatar tw-align-items-center tw-flex-shrink-0">
-                  <figure aria-label="<%- group['group_name'] %>" class="tw-avatar tw-avatar--size-30">
+                <div class="side-nav-card__avatar tbs-tw-flex-shrink-0">
+                  <figure aria-label="<%- group['group_name'] %>" class="tbs-tw-avatar--size-30">
                     <% if (group['is_opened']) { %>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-image tw-image-avatar" alt="<%- group['group_name'] %>" width="30" height="30" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="tbs-tw-image-avatar" alt="<%- group['group_name'] %>" width="30" height="30" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" />
                         <path d="M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" />
@@ -618,7 +994,7 @@
                         <% } %>
                       </svg>
                     <% } else { %>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="tw-block tw-image tw-image-avatar" alt="<%- group['group_name'] %>" width="30" height="30" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="tbs-tw-image-avatar" alt="<%- group['group_name'] %>" width="30" height="30" viewBox="0 0 24 24" stroke-width="2" stroke="<%- group['color'] %>" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                         <path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" />
                         <% if (is_someone_live) { %>
@@ -629,27 +1005,26 @@
                     <% } %>
                   </figure>
                 </div>
-                <div class="tw-ellipsis tw-flex tw-full-width tw-justify-content-between">
-                  <div data-a-target="side-nav-card-metadata" class="tw-ellipsis tw-full-width tw-mg-l-1">
-                    <div class="side-nav-card__title tw-align-items-center tw-flex">
+                <div class="tbs-tw-side-nav-card__metadata_container">
+                  <div data-a-target="side-nav-card-metadata" class="tbs-tw-side-nav-card__metadata_wrapper">
+                    <div class="tbs-side-nav-card__title">
                       <p data-a-target="side-nav-title"
-                        class="tw-c-text-alt tw-ellipsis tw-ellipsis tw-flex-grow-1 tw-font-size-5 tw-line-height-heading tw-semibold"
+                        class="tbs-tw-side-nav-title"
                         title="<%- group['group_name'] %> (<%- total_live_string %>/<%- channel_infos.length %>)"><span><%- group['group_name'] %> (<%- total_live_string %>/<%- channel_infos.length %>)</span></p>
                     </div>
-                    <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">
-                      <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
+                    <div class="tbs-tw-side-nav-card__metadata" data-a-target="side-nav-game-title">
+                      <p class="tbs-tw-side-nav-metadata"
                         title="<%- display_names_string %>"><%- display_names_string %></p>
                     </div>
-                  </div><div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
+                  </div><div class="tbs-tw-side-nav-card__live-status"
                       data-a-target="side-nav-live-status">
                       <button aria-label="그룹 수정"
-                        class="tbs-edit-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"
-                        data-tbs-group-index="<%- group_index %>"><span
-                            class="tw-button-icon__icon">
+                        class="tbs-edit-button tbs-tw-button"
+                        data-tbs-group-index="<%- group_index %>">
                             <div style="width: 2rem; height: 2rem;">
-                                <div class="tw-icon">
-                                    <div class="tw-aspect">
-                                      <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <div class="tbs-tw-icon">
+                                    <div class="tbs-tw-icon-inner">
+                                      <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg tbs-tw-icon-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                         <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
                                         <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
@@ -685,50 +1060,50 @@
    */
   function generateTbsGroupItemHtml(group_index, channel_info) {
     const templateTbsGroupItem = _.template(/*html*/ `
-      <div class="tw-transition tw-transition--enter-done tw-transition__scale-over tw-transition__scale-over--enter-done"
-        style="transition: transform 250ms ease 0ms, opacity;">
+      <div class="tbs-tw-transition"
+        style="transition-property: transform, opacity; transition-timing-function: ease;">
         <div>
-          <div class="side-nav-card tw-relative" data-test-selector="side-nav-card"><a
-              class="tbs-group-item tbs-link side-nav-card__link tw-align-items-center tw-flex tw-flex-nowrap tw-full-width tw-link tw-link--hover-underline-none tw-pd-x-1 tw-pd-y-05"
+          <div class="side-nav-card tbs-tw-relative" data-test-selector="side-nav-card"><a
+              class="tbs-group-item tbs-link tbs-tw-side-nav-card__link tbs-tw-link"
               data-test-selector="followed-channel" data-tbs-group-index="<%- group_index %>" data-tbs-channel="<%-  channel_info.user.login %>" href="/<%- channel_info.user.login %>" draggable="<%- draggable %>">
-              <div class="side-nav-card__avatar <% if (!is_live) { %>side-nav-card__avatar--offline <% } %>tw-align-items-center tw-flex-shrink-0">
-                <figure aria-label="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)" class="tw-avatar tw-avatar--size-30"><img
-                    class="tw-block tw-border-radius-rounded tw-image tw-image-avatar"
+              <div class="side-nav-card__avatar <% if (!is_live) { %>side-nav-card__avatar--offline <% } %> tbs-tw-flex-shrink-0">
+                <figure aria-label="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)" class="tbs-tw-avatar--size-30"><img
+                    class="tbs-tw-image-avatar"
                     alt="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)"
                     src="<%- channel_info.user.profileImageURL %>">
                 </figure>
               </div>
-              <div class="tw-ellipsis tw-flex tw-full-width tw-justify-content-between">
-                <div data-a-target="side-nav-card-metadata" class="tw-ellipsis tw-full-width tw-mg-l-1">
-                  <div class="side-nav-card__title tw-align-items-center tw-flex">
+              <div class="tbs-tw-side-nav-card__metadata_container">
+                <div data-a-target="side-nav-card-metadata" class="tbs-tw-side-nav-card__metadata_wrapper">
+                  <div class="tbs-side-nav-card__title">
                     <p data-a-target="side-nav-title"
-                      class="tw-c-text-alt tw-ellipsis tw-ellipsis tw-flex-grow-1 tw-font-size-5 tw-line-height-heading tw-semibold"
+                      class="tbs-tw-side-nav-title"
                       title="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)"><span><%- channel_info.user.displayName %> <span
                           class="intl-login">(<%- channel_info.user.login %>)</span></span></p>
                   </div>
-                  <div class="side-nav-card__metadata tw-pd-r-05" data-a-target="side-nav-game-title">
+                  <div class="tbs-tw-side-nav-card__metadata" data-a-target="side-nav-game-title">
                     <% if (is_live && channel_info.content.game !== null) { %>
-                      <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
+                      <p class="tbs-tw-side-nav-metadata"
                         title="<%- channel_info.content.game.displayName %>"><%- channel_info.content.game.displayName %></p>
                     <% } else if (!is_live && channel_info.content.edges.length > 0) { %>
-                      <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"
+                      <p class="tbs-tw-side-nav-metadata"
                         title="새 동영상 <%- channel_info.content.edges.length.toLocaleString() %>개">새 동영상 <%- channel_info.content.edges.length.toLocaleString() %>개</p>
                     <% } else { %>
-                      <p class="tw-c-text-alt-2 tw-ellipsis tw-font-size-6 tw-line-height-heading"></p>
+                      <p class="tbs-tw-side-nav-metadata"></p>
                     <% } %>
                   </div>
                 </div>
-                <div class="side-nav-card__live-status tw-flex-shrink-0 tw-mg-l-05"
+                <div class="tbs-tw-side-nav-card__live-status"
                   data-a-target="side-nav-live-status">
                   <% if (is_live) { %>
-                    <div class="tw-align-items-center tw-flex">
-                      <div class="ScChannelStatusIndicator-sc-1cf6j56-0 fSVvnY tw-channel-status-indicator"
+                    <div class="tbs-tw-side-nav-live-status">
+                      <div class="tbs-tw-channel-status-indicator"
                         data-test-selector="0"></div>
-                      <div class="tw-mg-l-05"><span data-test-selector="1" aria-label="시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명"
-                          class="tw-c-text-alt tw-font-size-6"><%- channel_info.content.viewersCount.toLocaleString() %></span></div>
+                      <div class="tbs-tw-channel-status-count-wrapper"><span data-test-selector="1" aria-label="시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명"
+                          class="tbs-tw-channel-status-count"><%- channel_info.content.viewersCount.toLocaleString() %></span></div>
                     </div>
                   <% } else { %>
-                    <span class="tw-c-text-alt tw-font-size-6">오프라인</span>
+                    <span class="tbs-tw-channel-status-count">오프라인</span>
                   <% } %>
                 </div>
               </div>
@@ -816,54 +1191,52 @@
    */
   function generateTbsCardOverlayHtml(channel_info) {
     const templateTbsCardOverlay = _.template(/*html*/ `
-      <div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
-        style="transition-delay: 0ms; transition-duration: 250ms;">
-        <div class="tw-pd-l-1">
-          <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block" role="dialog">
-            <div class="tw-pd-x-05 tw-pd-y-05">
+      <div class="tbs-tw-transition"
+        style="transition-property: transform, opacity; transition-timing-function: ease;">
+        <div style="padding-left: 1rem !important;">
+          <div class="tbs-tw-dialog" role="dialog">
+            <div style="padding: 0.5rem !important;">
             <% if (is_live) { %>
-              <div class="online-side-nav-channel-tooltip__body online-side-nav-channel-tooltip__body--image tw-pd-x-05">
-                <div class="tw-pd-b-1 tw-pd-t-05">
-                  <div class="tw-c-text-overlay">
-                    <div class="tw-relative">
-                      <div class="ScAspectRatio-sc-1sw3lwy-1 dNNaBC tw-aspect">
-                        <div class="ScAspectSpacer-sc-1sw3lwy-0 hhnnBG"></div>
-                        <img altsrc="https://static-cdn.jtvnw.net/ttv-static/404_preview-160x90.jpg" alt="<%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %>" class="tw-image" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg?tf=<%- time_factor %>">
-                      </div>
-                      <div class="tw-absolute tw-full-height tw-full-width tw-left-0 tw-media-card-image__corners tw-top-0">
-                        <div class="tw-absolute tw-left-0 tw-mg-1 tw-top-0">
-                          <div class="ScChannelStatusTextIndicator-sc-1f5ghgf-0 dVmkcd tw-channel-status-text-indicator" font-size="font-size-6">
-                            <p class="tw-strong tw-upcase tw-white-space-nowrap">생방송</p>
-                          </div>
+              <div class="tbs-tw-live-card-body">
+                <div class="tw-c-text-overlay" style="margin-bottom: 0.5rem;">
+                  <div class="tbs-tw-relative">
+                    <div class="tbs-tw-vod-card-image-aspect">
+                      <div class="tbs-tw-vod-card-image-aspect-spacer"></div>
+                      <img altsrc="https://static-cdn.jtvnw.net/ttv-static/404_preview-160x90.jpg" alt="<%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %>" class="tbs-tw-vod-card-image-aspect-img" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg?tf=<%- time_factor %>">
+                    </div>
+                    <div class="tbs-tw-media-card-image__corners">
+                      <div class="tbs-tw-channel-status-text-indicator-wrapper">
+                        <div class="tbs-tw-channel-status-text-indicator" font-size="font-size-6">
+                          <p class="tbs-tw-channel-status-text-indicator-text">생방송</p>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <p class="tw-c-text-link tw-ellipsis tw-line-clamp-2"><%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %></p>
-                <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2"><%- channel_info.user.broadcastSettings.title %></p>
-                <p class="tw-c-text-alt-2 tw-ellipsis tw-line-clamp-2">시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명</p>
+                <p class="tbs-tw-live-card-title"><%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %></p>
+                <p class="tbs-tw-live-card-title"><%- channel_info.user.broadcastSettings.title %></p>
+                <p class="tbs-tw-live-card-text">시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명</p>
               </div>
             <% } else { %>
               <div>
                 <% for (let i = 0; i < channel_info.content.edges.length; i++) {
                   const node = channel_info.content.edges[i].node; %>
-                  <a class="tbs-link tw-block tw-full-width tw-interactable tw-interactable--default tw-interactable--hover-enabled"
+                  <a class="tbs-link tbs-tw-interactable"
                     href="/videos/<%- node.id %>">
-                    <div class="tw-pd-x-05 tw-pd-y-05">
-                      <div class="tw-card tw-relative">
-                        <div class="tw-align-items-center tw-flex tw-flex-nowrap tw-flex-row">
-                          <div class="tw-border-radius-small tw-card-img tw-card-img--size-8 tw-flex-shrink-0 tw-overflow-hidden">
-                            <div class="ScAspectRatio-sc-1sw3lwy-1 dNNaBC tw-aspect">
-                              <div class="ScAspectSpacer-sc-1sw3lwy-0 hhnnBG"></div><img alt="<%- node.title %>"
-                                class="tw-image" src="<%- node.previewThumbnailURL %>">
+                    <div style="padding: 0.5rem !important;">
+                      <div class="tw-card tbs-tw-relative">
+                        <div class="tbs-tw-vod-card">
+                          <div class="tbs-tw-vod-card-image">
+                            <div class="tbs-tw-vod-card-image-aspect">
+                              <div class="tbs-tw-vod-card-image-aspect-spacer"></div><img alt="<%- node.title %>"
+                                class="tbs-tw-vod-card-image-aspect-img" src="<%- node.previewThumbnailURL %>">
                             </div>
                           </div>
-                          <div class="tw-card-body tw-relative">
-                            <div class="offline-side-nav-channel-tooltip__video-body tw-pd-l-1 tw-pd-r-1">
-                              <p class="tw-c-text-base tw-ellipsis tw-line-clamp-2" title="<%- node.title %>"><%- node.title %></p>
+                          <div class="tbs-tw-relative">
+                            <div class="tbs-tw-vod-card-body">
+                              <p class="tbs-tw-vod-card-body-title" title="<%- node.title %>"><%- node.title %></p>
                               <p data-test-selector="offline-followed-channel-tooltip-text"
-                                class="tw-c-text-alt-2"><%- node.viewCount.toLocaleString() %>회 시청</p>
+                                class="tbs-tw-vod-card-body-metadata"><%- node.viewCount.toLocaleString() %>회 시청</p>
                             </div>
                           </div>
                         </div>
@@ -871,10 +1244,10 @@
                     </div>
                   </a>
                 <% } %>
-                <a class="tbs-link tw-block tw-full-width tw-interactable tw-interactable--default tw-interactable--hover-enabled"
+                <a class="tbs-link tbs-tw-interactable""
                   href="/<%- channel_info.user.login %>/videos/all">
-                  <div class="tw-align-center tw-pd-05">
-                    <p class="tw-c-text-base">최근 동영상 모두 보기</p>
+                  <div class="tbs-tw-vod-show-all">
+                    <p class="tbs-tw-vod-show-all-text">최근 동영상 모두 보기</p>
                   </div>
                 </a>
               </div>
@@ -1076,71 +1449,67 @@
    */
   function generateTbsGroupSettingOverlayHtml(group) {
     const templateTbsGroupSettingOverlay = _.template(/*html*/ `
-      <div class="tw-transition tw-transition--enter-done tw-transition__fade tw-transition__fade--enter-done"
-        style="transition-delay: 0ms; transition-duration: 250ms;">
-        <div class="tw-pd-l-1">
-          <div class="tw-balloon tw-border-radius-large tw-c-background-base tw-c-text-inherit tw-elevation-2 tw-inline-block" role="dialog">
-            <div class="tbs-group-setting tw-pd-x-05 tw-pd-y-05" data-tbs-group-name="<%- group['group_name'] %>">
-              <div class="tw-pd-1">
-                <div class="tw-flex-grow-1 tw-font-size-6 tw-form-group tw-relative">
-                  <div>
-                    <div class="tw-mg-b-05">
-                      <label class="tw-form-label">그룹 제목</label>
-                    </div>
-                    <input type="text"
-                      class="tbs-group-setting-group-name tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05"
-                      autocapitalize="off" autocorrect="off" autocomplete="off"
-                      spellcheck="false" value="<%- group['group_name'] %>"<% if (is_unknown_group || group['is_locked']) { %> disabled="disabled"<% } %>>
+      <div class="tbs-tw-transition"
+        style="transition-property: transform, opacity; transition-timing-function: ease;">
+        <div style="padding-left: 1rem !important;">
+          <div class="tbs-tw-dialog" role="dialog">
+            <div class="tbs-group-setting" style="padding: 0.5rem !important;" data-tbs-group-name="<%- group['group_name'] %>">
+              <div style="padding: 1rem !important;" >
+                <div>
+                  <div style="margin-bottom: 0.5rem;">
+                    <label class="tw-form-label">그룹 제목</label>
                   </div>
-                  <div>
-                    <div class="tw-mg-b-05 tw-mg-t-1">
-                      <label class="tw-form-label">색상</label>
-                    </div>
-                    <div class="tw-combo-input tw-flex tw-full-width">
-                      <div class="tw-combo-input__input tw-flex-grow-1">
-                        <div class="tw-relative">
-                          <input type="text" class="tbs-group-setting-color tw-block tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-none tw-border-top-left-radius-medium tw-border-top-right-radius-none tw-font-size-6 tw-full-width tw-input tw-pd-l-1 tw-pd-r-1 tw-pd-y-05" autocapitalize="off" autocorrect="off" autocomplete="off"
-                          spellcheck="false" value="<%- group['color'] %>"<% if (group['is_locked']) { %> disabled="disabled"<% } %>>
-                        </div>
+                  <input type="text"
+                    class="tbs-group-setting-group-name tbs-tw-input"
+                    autocapitalize="off" autocorrect="off" autocomplete="off"
+                    spellcheck="false" value="<%- group['group_name'] %>"<% if (is_unknown_group || group['is_locked']) { %> disabled="disabled"<% } %>>
+                </div>
+                <div>
+                  <div style="margin-bottom: 0.5rem; margin-top: 1rem;">
+                    <label class="tw-form-label">색상</label>
+                  </div>
+                  <div class="tbs-tw-combo-input">
+                    <div class="tbs-tw-combo-input__input">
+                      <div class="tbs-tw-relative">
+                        <input type="text" class="tbs-group-setting-color tbs-tw-input" autocapitalize="off" autocorrect="off" autocomplete="off"
+                        spellcheck="false" value="<%- group['color'] %>"<% if (group['is_locked']) { %> disabled="disabled"<% } %>>
                       </div>
-                      <button aria-label="색상 초기화" class="tbs-group-setting-color-reset-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-none tw-border-bottom-right-radius-medium tw-border-top-left-radius-none tw-border-top-right-radius-medium tw-combo-input__button-icon tw-core-button tw-core-button--secondary tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>">
-                        <div class="tw-align-items-center tw-core-button-icon tw-inline-flex">
-                          <div style="width: 2rem; height: 2rem;">
-                            <div class="tw-icon">
-                              <div class="tw-aspect">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                  <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
-                                  <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-                                </svg>
-                              </div>
-                            </div>
+                    </div>
+                    <button aria-label="색상 초기화" class="tbs-group-setting-color-reset-button tbs-tw-combo-input__button-icon<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>">
+                      <div style="width: 2rem; height: 2rem;">
+                        <div class="tbs-tw-icon">
+                          <div class="tbs-tw-icon-inner">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg tbs-tw-icon-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                              <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
+                              <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+                            </svg>
                           </div>
                         </div>
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="tw-mg-b-05 tw-mg-t-1">
-                      <label class="tw-form-label">오프라인 채널 표시 여부</label>
-                    </div>
-                    <select
-                      class="tbs-group-setting-hide-offline tw-block tw-border-radius-medium tw-font-size-6 tw-full-width tw-pd-l-1 tw-pd-r-3 tw-pd-y-05 tw-select"<% if (group['is_locked']) { %> disabled="disabled"<% } %>>
-                      <option value="false"<% if (!group['hide_offline']) { %>selected="selected"<% } %>>표시함</option>
-                      <option value="true"<% if (group['hide_offline']) { %>selected="selected"<% } %>>표시하지 않음</option>
-                    </select>
+                      </div>
+                    </button>
                   </div>
                 </div>
-                <div class="tw-mg-t-1 tw-align-items-center tw-flex tw-flex-grow-1 tw-flex-shrink-1 tw-full-width tw-justify-content-between">
+                <div>
+                  <div style="margin-bottom: 0.5rem; margin-top: 1rem;">
+                    <label class="tw-form-label">오프라인 채널 표시 여부</label>
+                  </div>
+                  <select
+                    class="tbs-group-setting-hide-offline tbs-tw-select"<% if (group['is_locked']) { %> disabled="disabled"<% } %>>
+                    <option value="false"<% if (!group['hide_offline']) { %>selected="selected"<% } %>>표시함</option>
+                    <option value="true"<% if (group['hide_offline']) { %>selected="selected"<% } %>>표시하지 않음</option>
+                  </select>
+                </div>
+                <div class="tbs-edit-group-overlay-buttons">
                   <% if (!is_unknown_group) { %>
                     <div>
                       <button aria-label="삭제"
-                      class="tbs-group-setting-delete-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>"><span
+                      class="tbs-group-setting-delete-button tbs-tw-button<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>"><span
                         class="tw-button-icon__icon">
                         <div style="width: 2rem; height: 2rem;">
-                          <div class="tw-icon">
-                            <div class="tw-aspect">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <div class="tbs-tw-icon">
+                            <div class="tbs-tw-icon-inner">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg tbs-tw-icon-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <line x1="4" y1="7" x2="20" y2="7" />
                                 <line x1="10" y1="11" x2="10" y2="17" />
@@ -1154,12 +1523,12 @@
                       </span></button>
                       <% if (group['is_locked']) { %>
                         <button aria-label="잠금 해제"
-                        class="tbs-group-setting-unlock-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                        class="tbs-group-setting-unlock-button tbs-tw-button"><span
                           class="tw-button-icon__icon">
                           <div style="width: 2rem; height: 2rem;">
-                            <div class="tw-icon">
-                              <div class="tw-aspect">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <div class="tbs-tw-icon">
+                              <div class="tbs-tw-icon-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg tbs-tw-icon-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                   <rect x="5" y="11" width="14" height="10" rx="2" />
                                   <circle cx="12" cy="16" r="1" />
@@ -1171,12 +1540,12 @@
                         </span></button>
                       <% } else { %>
                         <button aria-label="잠금"
-                        class="tbs-group-setting-lock-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                        class="tbs-group-setting-lock-button tbs-tw-button"><span
                           class="tw-button-icon__icon">
                           <div style="width: 2rem; height: 2rem;">
-                            <div class="tw-icon">
-                              <div class="tw-aspect">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <div class="tbs-tw-icon">
+                              <div class="tbs-tw-icon-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg tbs-tw-icon-svg" width="100%" height="100%" viewBox="0 0 24 24"stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                   <rect x="5" y="11" width="14" height="10" rx="2" />
                                   <circle cx="12" cy="16" r="1" />
@@ -1193,12 +1562,12 @@
                   <% } %>
                   <div>
                     <button aria-label="취소"
-                      class="tbs-group-setting-cancel-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative"><span
+                      class="tbs-group-setting-cancel-button tbs-tw-button"><span
                         class="tw-button-icon__icon">
                         <div style="width: 2rem; height: 2rem;">
-                          <div class="tw-icon">
-                            <div class="tw-aspect">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <div class="tbs-tw-icon">
+                            <div class="tbs-tw-icon-inner">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg tbs-tw-icon-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <line x1="18" y1="6" x2="6" y2="18" />
                                 <line x1="6" y1="6" x2="18" y2="18" />
@@ -1208,12 +1577,12 @@
                         </div>
                       </span></button>
                     <button aria-label="저장"
-                      class="tbs-group-setting-save-button tw-align-items-center tw-align-middle tw-border-bottom-left-radius-medium tw-border-bottom-right-radius-medium tw-border-top-left-radius-medium tw-border-top-right-radius-medium tw-button-icon tw-core-button tw-inline-flex tw-justify-content-center tw-overflow-hidden tw-relative<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>"><span
+                      class="tbs-group-setting-save-button tbs-tw-button<% if (group['is_locked']) { %> tw-core-button--disabled<% } %>"><span
                         class="tw-button-icon__icon">
                         <div style="width: 2rem; height: 2rem;">
-                          <div class="tw-icon">
-                            <div class="tw-aspect">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <div class="tbs-tw-icon">
+                            <div class="tbs-tw-icon-inner">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="tbs-button-svg tbs-tw-icon-svg" width="100%" height="100%" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                 <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" />
                                 <circle cx="12" cy="14" r="2" />
@@ -1450,7 +1819,10 @@
             return;
           }
 
-          const card = findEventTargetByClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(
+            e,
+            'tbs-tw-side-nav-card__link'
+          );
           if (card !== null) {
             if (card.classList.contains('tbs-group-header')) {
               const group_index = Number(card.dataset.tbsGroupIndex);
@@ -1497,7 +1869,10 @@
           return;
         }
         if (e.target) {
-          const card = findEventTargetByClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(
+            e,
+            'tbs-tw-side-nav-card__link'
+          );
           if (card !== null) {
             if (card.classList.contains('tbs-group-item')) {
               const group_index = Number(card.dataset.tbsGroupIndex);
@@ -1529,7 +1904,10 @@
       'mouseout',
       function (e) {
         if (e.target) {
-          const card = findEventTargetByClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(
+            e,
+            'tbs-tw-side-nav-card__link'
+          );
           if (card !== null) {
             if (card.classList.contains('tbs-group-item')) {
               shouldShowCardOverlay = false;
@@ -1554,7 +1932,10 @@
       'dragstart',
       function (e) {
         if (e.target) {
-          const card = findEventTargetByClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(
+            e,
+            'tbs-tw-side-nav-card__link'
+          );
           if (card !== null) {
             shouldShowCardOverlay = false;
             debouncedClearCardOverlay();
@@ -1604,7 +1985,10 @@
       'drop',
       function (e) {
         if (e.target) {
-          const card = findEventTargetByClassName(e, 'side-nav-card__link');
+          const card = findEventTargetByClassName(
+            e,
+            'tbs-tw-side-nav-card__link'
+          );
           if (card !== null && dragged_card !== null) {
             const dragged_group_index = Number(
               dragged_card.dataset.tbsGroupIndex
