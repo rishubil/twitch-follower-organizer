@@ -771,6 +771,31 @@
         justify-content: space-between;
         margin-top: 1rem;
       }
+      .tbs-tw-svg {
+        -webkit-box-align: center;
+        align-items: center;
+        display: inline-flex;
+      }
+      .tbs-tw-svg-icon {
+        fill: var(--color-fill-alt-2);
+      }
+      .tbs-stream-type-indicator {
+        color: var(--color-text-overlay) !important;
+        background-color: var(--color-background-overlay) !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        border-radius: 0.2rem !important;
+        display: flex !important;
+      }
+      .tbs-stream-type-indicator-inner {
+        display: flex !important;
+        -webkit-box-align: center !important;
+        align-items: center !important;
+        margin-right: 0.5rem !important;
+      }
+      .tbs-stream-type-indicator-icon {
+        fill: var(--color-fill-current);
+      }
     `);
   }
 
@@ -944,10 +969,10 @@
       ', '
     );
     const is_someone_live = _.some(channel_infos, function (channel_info) {
-      return channel_info.content.viewersCount !== undefined;
+      return channel_info.content.type !== undefined;
     });
     const total_live_string = _.sumBy(channel_infos, function (channel_info) {
-      if (channel_info.content.viewersCount !== undefined) {
+      if (channel_info.content.type !== undefined) {
         return 1;
       }
       return 0;
@@ -961,10 +986,7 @@
       ) {
         const channel_info = channel_infos[channel_info_index];
         // render live channels, and if hide_offline is false, render offline channels too.
-        if (
-          channel_info.content.viewersCount !== undefined ||
-          !group['hide_offline']
-        ) {
+        if (channel_info.content.type !== undefined || !group['hide_offline']) {
           group_item_html += generateTbsGroupItemHtml(
             group_index,
             channel_info
@@ -1066,7 +1088,7 @@
           <div class="side-nav-card tbs-tw-relative" data-test-selector="side-nav-card"><a
               class="tbs-group-item tbs-link tbs-tw-side-nav-card__link tbs-tw-link"
               data-test-selector="followed-channel" data-tbs-group-index="<%- group_index %>" data-tbs-channel="<%-  channel_info.user.login %>" href="/<%- channel_info.user.login %>" draggable="<%- draggable %>">
-              <div class="side-nav-card__avatar <% if (!is_live) { %>side-nav-card__avatar--offline <% } %> tbs-tw-flex-shrink-0">
+              <div class="side-nav-card__avatar <% if (!is_online) { %>side-nav-card__avatar--offline <% } %> tbs-tw-flex-shrink-0">
                 <figure aria-label="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)" class="tbs-tw-avatar--size-30"><img
                     class="tbs-tw-image-avatar"
                     alt="<%- channel_info.user.displayName %> (<%- channel_info.user.login %>)"
@@ -1082,10 +1104,10 @@
                           class="intl-login">(<%- channel_info.user.login %>)</span></span></p>
                   </div>
                   <div class="tbs-tw-side-nav-card__metadata" data-a-target="side-nav-game-title">
-                    <% if (is_live && channel_info.content.game !== null) { %>
+                    <% if (is_online && channel_info.content.game !== null) { %>
                       <p class="tbs-tw-side-nav-metadata"
                         title="<%- channel_info.content.game.displayName %>"><%- channel_info.content.game.displayName %></p>
-                    <% } else if (!is_live && channel_info.content.edges.length > 0) { %>
+                    <% } else if (!is_online && channel_info.content.edges.length > 0) { %>
                       <p class="tbs-tw-side-nav-metadata"
                         title="새 동영상 <%- channel_info.content.edges.length.toLocaleString() %>개">새 동영상 <%- channel_info.content.edges.length.toLocaleString() %>개</p>
                     <% } else { %>
@@ -1095,10 +1117,20 @@
                 </div>
                 <div class="tbs-tw-side-nav-card__live-status"
                   data-a-target="side-nav-live-status">
-                  <% if (is_live) { %>
+                  <% if (is_online) { %>
                     <div class="tbs-tw-side-nav-live-status">
-                      <div class="tbs-tw-channel-status-indicator"
-                        data-test-selector="0"></div>
+                      <% if (is_live) { %>
+                        <div class="tbs-tw-channel-status-indicator"
+                          data-test-selector="0"></div>
+                      <% } else { %>
+                        <figure class="tbs-tw-svg" data-test-selector="0">
+                          <svg type="color-fill-alt-2" width="12px" height="12px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px" class="tbs-tw-svg-icon">
+                            <g>
+                              <path d="M10 16a5.98 5.98 0 004.243-1.757l1.414 1.414A8 8 0 1116 4.708V2h2v6h-6V6h2.472A6 6 0 1010 16z"></path>
+                            </g>
+                          </svg>
+                        </figure>
+                      <% } %>
                       <div class="tbs-tw-channel-status-count-wrapper"><span data-test-selector="1" aria-label="시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명"
                           class="tbs-tw-channel-status-count"><%- channel_info.content.viewersCount.toLocaleString() %></span></div>
                     </div>
@@ -1115,7 +1147,8 @@
       group_index: group_index,
       draggable: groups[group_index]['is_locked'] ? 'false' : 'true',
       channel_info: channel_info,
-      is_live: channel_info.content.viewersCount !== undefined,
+      is_online: channel_info.content.type !== undefined,
+      is_live: channel_info.content.type === 'live',
     });
   }
 
@@ -1196,24 +1229,38 @@
         <div style="padding-left: 1rem !important;">
           <div class="tbs-tw-dialog" role="dialog">
             <div style="padding: 0.5rem !important;">
-            <% if (is_live) { %>
+            <% if (is_online) { %>
               <div class="tbs-tw-live-card-body">
                 <div class="tw-c-text-overlay" style="margin-bottom: 0.5rem;">
                   <div class="tbs-tw-relative">
                     <div class="tbs-tw-vod-card-image-aspect">
                       <div class="tbs-tw-vod-card-image-aspect-spacer"></div>
-                      <img altsrc="https://static-cdn.jtvnw.net/ttv-static/404_preview-160x90.jpg" alt="<%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %>" class="tbs-tw-vod-card-image-aspect-img" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg?tf=<%- time_factor %>">
+                      <img altsrc="https://static-cdn.jtvnw.net/ttv-static/404_preview-160x90.jpg" alt="<%- channel_info.user.displayName %><% if (is_online && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %>" class="tbs-tw-vod-card-image-aspect-img" src="https://static-cdn.jtvnw.net/previews-ttv/live_user_<%- channel_info.user.login %>-320x180.jpg?tf=<%- time_factor %>">
                     </div>
                     <div class="tbs-tw-media-card-image__corners">
                       <div class="tbs-tw-channel-status-text-indicator-wrapper">
-                        <div class="tbs-tw-channel-status-text-indicator" font-size="font-size-6">
-                          <p class="tbs-tw-channel-status-text-indicator-text">생방송</p>
-                        </div>
+                        <% if (is_live) { %>
+                          <div class="tbs-tw-channel-status-text-indicator" font-size="font-size-6">
+                            <p class="tbs-tw-channel-status-text-indicator-text">생방송</p>
+                          </div>
+                        <% } else { %>
+                          <div class="tbs-stream-type-indicator tbs-stream-type-indicator--rerun">
+                            <div class="tbs-stream-type-indicator-inner">
+                              <figure class="tbs-tw-svg">
+                                <svg type="color-fill-current" width="14px" height="14px" version="1.1" viewBox="0 0 20 20" x="0px" y="0px" class="tbs-stream-type-indicator-icon">
+                                  <g>
+                                    <path d="M10 16a5.98 5.98 0 004.243-1.757l1.414 1.414A8 8 0 1116 4.708V2h2v6h-6V6h2.472A6 6 0 1010 16z"></path>
+                                  </g>
+                                </svg>
+                              </figure>
+                            </div>
+                          <span class="">재방송</span></div>
+                        <% } %>
                       </div>
                     </div>
                   </div>
                 </div>
-                <p class="tbs-tw-live-card-title"><%- channel_info.user.displayName %><% if (is_live && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %></p>
+                <p class="tbs-tw-live-card-title"><%- channel_info.user.displayName %><% if (is_online && channel_info.content.game !== null) { %> · <%- channel_info.content.game.displayName %><% } %></p>
                 <p class="tbs-tw-live-card-title"><%- channel_info.user.broadcastSettings.title %></p>
                 <p class="tbs-tw-live-card-text">시청자 <%- channel_info.content.viewersCount.toLocaleString() %>명</p>
               </div>
@@ -1258,7 +1305,8 @@
     `);
     return templateTbsCardOverlay({
       channel_info: channel_info,
-      is_live: channel_info.content.viewersCount !== undefined,
+      is_online: channel_info.content.type !== undefined,
+      is_live: channel_info.content.type === 'live',
       time_factor: Math.round(new Date().getTime() / (1000 * 60 * 5)), // it will be changed every 5 minutes
     });
   }

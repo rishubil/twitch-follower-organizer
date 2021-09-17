@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Support rerun type
+
 ## v0.1.20 - 2021-07-27
 
 ### Changed
