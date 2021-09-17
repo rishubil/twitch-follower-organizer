@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.1.22 - 2021-09-17
+
 ### Added
 
 - Support rerun type
