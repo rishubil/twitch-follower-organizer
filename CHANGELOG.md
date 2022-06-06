@@ -5,6 +5,7 @@
 ### Changed
 
 - Fix the button on sidebar header
+- Update dependencies
 
 ## v0.1.22 - 2021-09-17
 

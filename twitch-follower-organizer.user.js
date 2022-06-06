@@ -9,7 +9,7 @@
 // @downloadURL https://raw.githubusercontent.com/rishubil/twitch-follower-organizer/master/twitch-follower-organizer.user.js
 // @updateURL   https://raw.githubusercontent.com/rishubil/twitch-follower-organizer/master/twitch-follower-organizer.user.js
 // @include     *://*.twitch.tv/*
-// @require     https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js
+// @require     https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js
 // @run-at      document-start
 // @grant       GM_addStyle
 // @grant       GM_setValue
