@@ -921,7 +921,7 @@
     tbsEl.innerHTML = tbsHtml;
 
     const sideNavHeaderTextEl = document.querySelector(
-      '.side-nav-section:first-child .side-nav-header h5'
+      '.side-nav-section:first-child .side-nav-header h2'
     );
     if (sideNavHeaderTextEl !== null) {
       let addGroupButtonEl = sideNavHeaderTextEl.getElementsByClassName(
@@ -1733,9 +1733,8 @@
             const group = groups[group_index];
 
             // check opened group settings is same with this group
-            const groupSettingEl = document.getElementsByClassName(
-              'tbs-group-setting'
-            );
+            const groupSettingEl =
+              document.getElementsByClassName('tbs-group-setting');
             if (
               groupSettingEl.length !== 0 &&
               groupSettingEl[0].dataset.tbsGroupName === group.group_name

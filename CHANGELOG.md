@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Fix the button on sidebar header
+
 ## v0.1.22 - 2021-09-17
 
 ### Added
