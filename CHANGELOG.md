@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.1.24 - 2022-08-08
+
 ### Changed
 
 - Fix selector for sidebar
