@@ -1475,7 +1475,7 @@
     const tbsoEl = getOverlay();
     clearGroupSettingOverlay();
 
-    const sideBarEl = document.getElementById('sideNav');
+    const sideBarEl = document.getElementsByClassName('side-nav')[0];
     const rect = sideBarEl.getBoundingClientRect();
     const x = rect.x + rect.width;
     const y = rect.y + 48;
