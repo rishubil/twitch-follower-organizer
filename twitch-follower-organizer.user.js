@@ -506,6 +506,9 @@
         margin-right: 1rem;
         height: auto;
       }
+      .side-nav--collapsed .tbs-add-group-button {
+        display: none;
+      }
       .tbs-group-header .side-nav-card__live-status {
         display: none;
       }
@@ -891,6 +894,17 @@
    * Render UI from data
    */
   function renderFollowedSection() {
+    if (document.querySelector('.fake-nav-title') !== null) {
+      document.querySelector('.fake-nav-title').remove();
+    }
+    const is_expanded = document.querySelector('.side-nav__title') !== null;
+    if (!is_expanded) {
+      const navSectionParent =
+        document.querySelector('.side-nav-section').parentElement;
+      const fakeNavTitle = document.createElement('div');
+      fakeNavTitle.classList.add('fake-nav-title');
+      navSectionParent.prepend(fakeNavTitle);
+    }
     const transitionGroupEl = document.querySelector(
       '.side-nav-section:nth-child(2) .tw-transition-group'
     );

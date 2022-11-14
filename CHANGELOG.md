@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Fix selector for collapsed sidebar
+
 ## v0.1.25 - 2022-11-15
 
 ### Changed
