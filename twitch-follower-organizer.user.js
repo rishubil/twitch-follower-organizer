@@ -493,20 +493,18 @@
         width: 30px;
         height: 30px;
       }
-      .side-nav-section:first-child .tw-transition {
+      .side-nav-section:nth-child(2) .tw-transition {
         display: none!important;
       }
-      .side-nav-section:first-child .side-nav-show-more-toggle__button {
+      .side-nav-section:nth-child(2) .side-nav-show-more-toggle__button {
         display: none!important;
       }
-      .side-nav-section:first-child .twitch-better-sidebar .tw-transition {
+      .side-nav-section:nth-child(2) .twitch-better-sidebar .tw-transition {
         display: block!important;
       }
-      .side-nav-section:first-child .side-nav-header .tbs-add-group-button {
-        position: absolute!important;
-        top: 0;
-        margin-top: 1rem;
-        margin-left: 1rem;
+      .side-nav-section:nth-child(2) .followed-side-nav-header .tbs-add-group-button {
+        margin-right: 1rem;
+        height: auto;
       }
       .tbs-group-header .side-nav-card__live-status {
         display: none;
@@ -894,7 +892,7 @@
    */
   function renderFollowedSection() {
     const transitionGroupEl = document.querySelector(
-      '.side-nav-section:first-child .tw-transition-group'
+      '.side-nav-section:nth-child(2) .tw-transition-group'
     );
     if (transitionGroupEl === null) {
       console.log('[TBS] transitionGroup is not loaded');
@@ -921,7 +919,7 @@
     tbsEl.innerHTML = tbsHtml;
 
     const sideNavHeaderTextEl = document.querySelector(
-      '.side-nav-section:first-child .side-nav-header h2'
+      '.side-nav-section:nth-child(2) .followed-side-nav-header'
     );
     if (sideNavHeaderTextEl !== null) {
       let addGroupButtonEl = sideNavHeaderTextEl.getElementsByClassName(
@@ -2143,7 +2141,7 @@
   function checkFollowingUiUpdated() {
     try {
       const followingEl = document.querySelector(
-        '.side-nav-section:first-child'
+        '.side-nav-section:nth-child(2)'
       );
       const followingSn = getReactStateNode(followingEl);
       const followingOriginalComponentDidUpdate =
